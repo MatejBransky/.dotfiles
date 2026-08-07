@@ -48,6 +48,7 @@ function y() {
 # git
 alias gc='git commit'
 alias lg='lazygit'
+alias cfgui='lazygit --git-dir="$HOME/.cfg" --work-tree="$HOME"'
 
 # node (fnm)
 register_command 'eval "$(fnm env --use-on-cd --shell zsh)"' $PRIORITY_3
