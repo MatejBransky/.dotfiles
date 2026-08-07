@@ -137,7 +137,7 @@ Neovim plugins have their own lockfile at `~/.config/nvim/lazy-lock.json`, which
 
 ## Git Identity and SSH
 
-The global `~/.gitconfig` uses `includeIf` to keep work and personal identities separate:
+The global `~/.gitconfig` uses `includeIf` to keep work and personal identities separate. Git selects an included config based on the path of the repository's Git directory:
 
 ```ini
 [includeIf "gitdir:~/Developer/work/"]
@@ -148,7 +148,69 @@ The global `~/.gitconfig` uses `includeIf` to keep work and personal identities 
     path = ~/Developer/personal/.gitconfig
 ```
 
-The dotfiles repository is personal, so `~/.cfg` uses the personal name, email, SSH signing key and personal `core.sshCommand`. The private SSH key is not stored in files; it is provided by the Bitwarden SSH agent. The public `~/.ssh/id_pub_personal` file only identifies the key used by SSH.
+The expected layout is:
+
+```text
+~/.gitconfig
+~/Developer/work/.gitconfig
+~/Developer/personal/.gitconfig
+~/.cfg
+~/.ssh/id_pub_work
+~/.ssh/id_pub_personal
+```
+
+The global config contains shared Git behavior and routing rules:
+
+```ini
+[gpg]
+    format = ssh
+[core]
+    editor = nvim
+
+[includeIf "gitdir:~/Developer/work/"]
+    path = ~/Developer/work/.gitconfig
+[includeIf "gitdir:~/Developer/personal/"]
+    path = ~/Developer/personal/.gitconfig
+[includeIf "gitdir:~/.cfg"]
+    path = ~/Developer/personal/.gitconfig
+```
+
+The work and personal files contain identity-specific settings:
+
+```ini
+# ~/Developer/work/.gitconfig
+[user]
+    name = Matej Bransky
+    email = work@example.com
+    signingkey = ssh-ed25519 WORK_PUBLIC_KEY
+[core]
+    sshCommand = "ssh -i ~/.ssh/id_pub_work"
+```
+
+```ini
+# ~/Developer/personal/.gitconfig
+[user]
+    name = Matej Bransky
+    email = personal@example.com
+    signingkey = ssh-ed25519 PERSONAL_PUBLIC_KEY
+[core]
+    sshCommand = "ssh -i ~/.ssh/id_pub_personal"
+```
+
+The dotfiles repository is personal, so `~/.cfg` loads `~/Developer/personal/.gitconfig` and uses the personal name, email, SSH signing key and SSH command. The `gitdir:~/.cfg` rule intentionally has no trailing slash because `~/.cfg` is the bare Git directory itself.
+
+## Bitwarden SSH Agent
+
+SSH private keys are stored in Bitwarden and are never committed or kept as ordinary files in `~/.ssh/`. The Bitwarden SSH agent provides the private key when OpenSSH uses the matching public-key identity:
+
+```text
+~/.ssh/id_pub_work      # public key only
+~/.ssh/id_pub_personal  # public key only
+```
+
+The SSH agent must be running and unlocked before Git operations that use SSH. The SSH socket is exposed through `SSH_AUTH_SOCK`; its exact path is machine-specific and is configured locally in the shell environment rather than stored as a secret in this repository.
+
+The `core.sshCommand` setting selects the correct public-key identity for each repository scope. Bitwarden then supplies the corresponding private key through its agent.
 
 Verify the effective configuration:
 

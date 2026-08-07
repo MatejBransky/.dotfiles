@@ -23,3 +23,5 @@ cfgvim
 Full documentation is available in [`~/.config/workstation/README.md`](.config/workstation/README.md).
 
 The repository uses the personal Git identity through `includeIf` for `~/.cfg`. Repositories in `~/Developer/work/` use the work identity; repositories in `~/Developer/personal/` and this dotfiles repository use the personal identity. SSH private keys are provided by the Bitwarden agent.
+
+The complete work/personal Git identity layout, `includeIf` examples and Bitwarden SSH agent setup are documented in [`.config/workstation/README.md`](.config/workstation/README.md#git-identity-and-ssh).
