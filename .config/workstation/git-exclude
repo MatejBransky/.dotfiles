@@ -1,0 +1,24 @@
+# The bare repository uses $HOME as its work tree. Track only explicit paths.
+*
+!.zshrc
+!.zprofile
+!.gitconfig
+!.config/
+!.config/lazygit/
+!.config/lazygit/**
+!.config/nvim/
+!.config/nvim/**
+.config/nvim/.claude/
+.config/nvim/externals/
+!.config/opencode/
+!.config/opencode/**
+.config/opencode/page.png
+!.config/wezterm/
+!.config/wezterm/**
+.config/wezterm/.claude/
+!.config/yazi/
+!.config/yazi/**
+!.config/workstation/
+!.config/workstation/**
+!.config/zsh/
+!.config/zsh/**

@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WezTerm Layout",
+  "type": "object",
+  "required": ["tabs"],
+  "properties": {
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "root": {
+      "type": "string",
+      "description": "Base directory relative paths resolve against. Supports a leading '~'. If omitted, defaults to the cwd of the pane that opened the picker."
+    },
+    "tabs": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/tab" }
+    }
+  },
+  "definitions": {
+    "tab": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "description": "If omitted, WezTerm's default tab title is used (cwd + the active pane's running command)."
+        },
+        "cwd": { "type": "string" },
+        "layout": { "$ref": "#/definitions/pane" }
+      }
+    },
+    "pane": {
+      "anyOf": [
+        { "$ref": "#/definitions/leafPane" },
+        { "$ref": "#/definitions/splitPane" }
+      ]
+    },
+    "leafPane": {
+      "type": "object",
+      "properties": {
+        "cwd": { "type": "string" },
+        "command": {
+          "oneOf": [
+            { "type": "string" },
+            { "type": "array", "items": { "type": "string" } }
+          ],
+          "description": "If omitted, the pane just opens a shell."
+        },
+        "size": {
+          "type": "number",
+          "default": 1,
+          "description": "fr weight relative to sibling panes"
+        }
+      }
+    },
+    "splitPane": {
+      "type": "object",
+      "required": ["direction", "panes"],
+      "properties": {
+        "direction": { "enum": ["row", "column"] },
+        "cwd": {
+          "type": "string",
+          "description": "default cwd for children, unless they override it"
+        },
+        "size": {
+          "type": "number",
+          "default": 1,
+          "description": "fr weight relative to sibling panes"
+        },
+        "panes": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/definitions/pane" }
+        }
+      }
+    }
+  }
+}

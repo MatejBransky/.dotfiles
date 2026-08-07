@@ -1,0 +1,50 @@
+[gpg]
+	format = ssh
+[commit]
+	gpgsign = false
+[core]
+	editor = nvim
+[includeIf "gitdir:~/Developer/work/"]
+    path = ~/Developer/work/.gitconfig
+[includeIf "gitdir:~/Developer/personal/"]
+    path = ~/Developer/personal/.gitconfig
+[alias]
+  st = "status -s -b"
+  c = "commit"
+
+  # --all
+  # --verbose
+  br = "branch -a -v"
+
+  co = "checkout"
+  cb = "checkout -b"
+
+  # Short hash, relative date and message.
+  logd = "log --pretty='%C(yellow)%h %C(cyan)%ar %Creset%s'"
+
+  # --graph:
+  #     Draw a text-based graphical representation of the commit history on
+  #     the left hand side of the output.
+  # --decorate:
+  #     Print out the ref names of any commits that are shown. Defaults to
+  #     short optionm such that the name prefixes refs/heads/, refs/tags/ and
+  #     refs/remotes/ will not be printed.
+  dog = "log --graph --decorate --oneline"
+  # Force push all branches in your current stack (source: https://www.codetinkerer.com/2023/10/01/stacked-branches-with-vanilla-git.html)
+	fpstack = "!git log --decorate=short --pretty='format:%D' origin/main.. | sed 's/, /\\n/g; s/HEAD -> //'  | grep -Ev '/|^$' | xargs git push --force-with-lease origin"
+[merge]
+  tool = nvim
+[mergetool "nvim"]
+  cmd = nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
+[gpg "ssh"]
+	allowedSignersFile = /Users/matejbransky/.ssh/allowed_signers
+[rerere]
+  enabled = true
+[rebase]
+	updateRefs = true
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential

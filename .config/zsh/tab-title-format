@@ -1,0 +1,16 @@
+#!/bin/zsh
+
+path=$1
+command_name=${2:-}
+
+if [[ "$path" == "$HOME" ]]; then
+  path="~"
+elif [[ "$path" == "$HOME"/* ]]; then
+  path="~${path#$HOME}"
+fi
+
+if [[ -n "$command_name" ]]; then
+  print -r -- "${path}•${command_name}"
+else
+  print -r -- "$path"
+fi

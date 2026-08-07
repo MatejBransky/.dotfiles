@@ -1,0 +1,9 @@
+# Local runtime state — rewritten by colorscheme.toggle_mode()/sync_theme(),
+# self-heals to sane defaults on first run (see colorscheme/init.lua).
+colorscheme/preset.config.json
+colorscheme/theme
+
+# Claude Code: local-only permission overrides, not meant to be shared.
+.claude/settings.local.json
+
+.DS_Store

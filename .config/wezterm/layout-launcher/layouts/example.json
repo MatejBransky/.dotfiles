@@ -1,0 +1,22 @@
+{
+  "$schema": "../schema.json",
+  "name": "example",
+  "description": "Demo layout: editor tab + a 2:1:1 dev-services tab. No 'root' set on purpose - it resolves against the cwd of the pane you open the picker from.",
+  "tabs": [
+    {
+      "label": "editor",
+      "layout": { "command": ["nvim", "."] }
+    },
+    {
+      "label": "services",
+      "layout": {
+        "direction": "row",
+        "panes": [
+          { "size": 2, "command": "echo \"pane 1\"" },
+          { "size": 1, "command": "echo \"pane 2\"" },
+          { "size": 1, "command": "echo \"logs:worker\"" }
+        ]
+      }
+    }
+  ]
+}

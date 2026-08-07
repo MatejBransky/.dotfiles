@@ -1,0 +1,9 @@
+[[mgr.prepend_keymap]]
+on   = [ "e" ]
+run  = "shell '~/.local/bin/nvim-cwd \"%h\"' --block"
+desc = "Open hovered directory in nvim"
+
+[[mgr.prepend_keymap]]
+on   = [ "u" ]
+run  = "shell 'open %h'"
+desc = "Open hovered file with system default app"

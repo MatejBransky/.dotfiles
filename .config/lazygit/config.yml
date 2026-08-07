@@ -1,0 +1,43 @@
+gui:
+  # fix colors for selected line
+  theme:
+    selectedLineBgColor:
+      - reverse # set to `default` to have no background colour
+      - bold
+git:
+  overrideGpg: true
+  pagers:
+    - colorArg: always
+os:
+  # source: https://github.com/LazyVim/LazyVim/discussions/543#discussioncomment-5808573
+  edit: "nvim --server $NVIM --remote-tab {{filename}}"
+services:
+  "gitlab.ataccama.dev": "gitlab:gitlab.ataccama.dev"
+customCommands:
+  - key: "<c-d>"
+    description: "Trims your tracking branches whose upstream branches are merged or stray"
+    command: "git trim --no-confirm"
+    context: localBranches
+    prompts:
+      - type: confirm
+        title: "Trims your tracking branches whose upstream branches are merged or stray"
+        body: "Are you sure you want to delete local branches whose upstream branches are merged or stray?"
+    output: log
+  - key: "<c-u>"
+    description: "Force push all branches in your current stack"
+    context: global
+    command: git fpstack
+    prompts:
+      - type: confirm
+        title: Sending git fpstack
+        body: Are you sure you want to push all branches in your current stack?
+    output: log
+  - key: "<c-a>"
+    description: "Amend last commit --no-verify"
+    command: git commit --amend --no-edit --no-verify
+    context: files
+    prompts:
+      - type: confirm
+        title: "Amend last commit --no-verify"
+        body: "Are you sure you want to amend the last commit without verification?"
+    output: log

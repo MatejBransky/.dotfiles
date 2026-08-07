@@ -1,0 +1,172 @@
+-- Shared helpers for building references to the current file/line(s).
+local M = {}
+
+-- Extract the real file path from a diffview buffer URI.
+-- diffview:///path/to/file turns into /path/to/file
+local function extract_diffview_path(uri)
+  local path = uri:match("^diffview://(.*)$")
+  if path then
+    return path
+  end
+  return nil
+end
+
+-- Detect if the current buffer is a diffview buffer and extract the real file path.
+-- Diffview buffers show file paths after the last "/" in the buffer name.
+local function get_diffview_file()
+  local bufname = vim.fn.bufname("%")
+  if bufname:find("diffview://", 1, true) then
+    local real_path = extract_diffview_path(bufname)
+    if real_path then
+      return real_path
+    end
+  end
+  return nil
+end
+
+-- Extract relative file path from bare worktree URI
+-- Input:  /path/to/monorepo/.bare/worktrees/feature-name/hash/backend/services/file.ts
+-- Output: backend/services/file.ts (and real_worktree root)
+local function extract_bare_worktree_path(file_path)
+  -- Check if this is a bare worktree path
+  if not file_path:find("/.bare/worktrees/") then
+    return nil, nil
+  end
+
+  -- Extract monorepo root (everything before /.bare)
+  local monorepo_root = file_path:match("^(.*/)")  -- start directory
+  monorepo_root = monorepo_root:match("^(.*)/.bare/worktrees/")  -- up to /.bare/worktrees/
+
+  -- Extract worktree name (first dir after /worktrees/)
+  local worktree_name = file_path:match("/.bare/worktrees/([^/]+)")
+
+  if not monorepo_root or not worktree_name then
+    return nil, nil
+  end
+
+  local real_worktree = monorepo_root .. "/" .. worktree_name
+
+  -- Verify the worktree exists
+  if vim.fn.isdirectory(real_worktree) ~= 1 then
+    return nil, nil
+  end
+
+  -- Extract the relative file path: everything after worktree_name/hash/
+  -- Pattern: /.bare/worktrees/feature-name/HASH/backend/services/...
+  -- We want: backend/services/...
+  local _, _, relative_path = file_path:find("/.bare/worktrees/[^/]+/[^/]+/(.+)$")
+  if not relative_path then
+    return nil, nil
+  end
+
+  return real_worktree, relative_path
+end
+
+-- Get git root using git command (handles bare repos, worktrees, etc.)
+-- Returns: (git_root, optional_relative_path_for_bare_worktrees)
+local function find_git_root(file_path)
+  -- First, check if this is a bare worktree path and extract the real worktree root + relative path
+  local real_worktree, relative_path = extract_bare_worktree_path(file_path)
+  if real_worktree then
+    return real_worktree, relative_path
+  end
+
+  -- Standard case: try git rev-parse --show-toplevel from the actual filesystem path
+  local dir = vim.fs.dirname(file_path)
+  while dir and dir ~= "/" and dir ~= "" do
+    if vim.fn.isdirectory(dir) == 1 then
+      local cmd = "cd " .. vim.fn.shellescape(dir) .. " && git rev-parse --show-toplevel 2>/dev/null"
+      local handle = io.popen(cmd)
+      if handle then
+        local result = handle:read("*a"):match("^(.-)[\r\n]*$")
+        handle:close()
+        if result and result ~= "" then
+          return result, nil
+        end
+      end
+      break
+    end
+    dir = vim.fs.dirname(dir)
+  end
+
+  return nil, nil
+end
+
+-- Compute relative path by stripping the base path prefix
+local function make_relative(file_path, base_path)
+  if not base_path or base_path == "/" then
+    return file_path
+  end
+
+  -- Ensure base_path ends with /
+  if not base_path:match("/$") then
+    base_path = base_path .. "/"
+  end
+
+  -- Check if file_path starts with base_path
+  if file_path:sub(1, #base_path) == base_path then
+    return file_path:sub(#base_path + 1)
+  end
+
+  return file_path
+end
+
+-- Relative path of the current file, preferring the git work tree root
+-- and falling back to the path relative to cwd when outside a repo.
+-- Handles diffview buffers specially.
+function M.relative_path()
+  local file_path
+
+  -- Handle diffview buffers: extract the real file path from the URI
+  local diffview_path = get_diffview_file()
+  if diffview_path then
+    file_path = diffview_path
+  else
+    file_path = vim.fn.expand("%:p")
+  end
+
+  -- Try to find git root (may also return a pre-computed relative path for bare worktrees)
+  local git_root, pre_computed_relative = find_git_root(file_path)
+  if pre_computed_relative then
+    -- For bare worktree paths, we already have the relative path
+    return pre_computed_relative
+  end
+
+  if git_root then
+    return make_relative(file_path, git_root)
+  end
+
+  -- Fallback: make relative to cwd
+  return make_relative(file_path, vim.fn.getcwd())
+end
+
+-- Format a reference for the current file and a line/range.
+function M.format(from, to)
+  local path = M.relative_path()
+  if to and to > from then
+    return string.format("%s#L%d-L%d", path, from, to)
+  end
+  return string.format("%s#L%d", path, from)
+end
+
+-- Reference string for the current cursor line or, in visual mode, the
+-- selected range: "path#L10" or "path#L45-L67". Leaves visual mode after
+-- capturing the range so callers can safely move the cursor/window.
+function M.line_ref()
+  -- mode() still reports visual here because a Lua function rhs runs like
+  -- <Cmd> and does not leave the current mode.
+  if vim.fn.mode():match("[vV\22]") then
+    local from, to = vim.fn.line("v"), vim.fn.line(".")
+    if from > to then
+      from, to = to, from
+    end
+    -- "x" flag processes the Esc synchronously, so a following startinsert is
+    -- not cancelled by a queued Esc.
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "nx", false)
+    return M.format(from, to)
+  end
+
+  return M.format(vim.fn.line("."))
+end
+
+return M

@@ -1,0 +1,34 @@
+# Core workstation tools used by the shell, editor, terminal and file tools.
+brew "git"
+brew "gh"
+brew "neovim"
+brew "lazygit"
+brew "yazi"
+brew "ripgrep"
+brew "fd"
+brew "fzf"
+brew "jq"
+brew "zoxide"
+brew "zsh-syntax-highlighting"
+brew "zsh-vi-mode"
+brew "opencode"
+
+# Neovim and development support.
+brew "ast-grep"
+brew "cmake"
+brew "gcc"
+brew "go-task"
+brew "node"
+brew "pnpm"
+brew "python@3.14"
+brew "pipx"
+brew "tree-sitter"
+
+# Other tools currently used in the development environment.
+brew "awscli"
+brew "harlequin"
+brew "lazysql"
+brew "pandoc"
+
+cask "font-symbols-only-nerd-font"
+cask "wezterm@nightly"

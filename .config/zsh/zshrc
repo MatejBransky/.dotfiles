@@ -1,0 +1,30 @@
+# The prompt display configuration, including the current directory and contextual information.
+source ~/.config/zsh/prompt.zsh
+
+# Tab title synchronization functions
+source ~/.config/zsh/tab-title.zsh
+
+# Common bin paths for terminal
+source ~/.config/zsh/path.zsh
+
+# Init utils for init commands from various sources
+# API:
+# - register_command <command: string> <priority: $PRIORITY_<1-6>>
+# - execute_commands_by <init source for track purposes: string>
+source ~/.config/zsh/init-utils.zsh
+
+# This command initializes the Zsh completion system:
+register_command 'autoload -Uz compinit && compinit' $PRIORITY_2
+
+# Dev-related configs
+[ -f ~/.config/zsh/dev.zsh ] && source ~/.config/zsh/dev.zsh
+
+# Company-related configurations
+[ -f ~/.config/zsh/company.zsh ] && source ~/.config/zsh/company.zsh
+
+source ~/.config/zsh/vim-mode.zsh
+
+# Execute init commands if they've not been initialized yet
+if [[ -z $INITIALIZED_BY ]]; then
+  execute_commands_by '.zshrc'
+fi

@@ -1,0 +1,15 @@
+{
+  "$schema": "./presets.schema.json",
+  "presets": {
+    "default": {
+      "wezterm": {
+        "light": "One Light (base16)",
+        "dark": "OneDark (base16)"
+      },
+      "neovim": {
+        "light": "onedark",
+        "dark": "onedark"
+      }
+    }
+  }
+}
