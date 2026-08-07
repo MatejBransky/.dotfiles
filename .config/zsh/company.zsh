@@ -23,6 +23,7 @@ alias fmmm-trans="pnpm nx format:write mmm-modules-transformations"
 alias atalog="jq -rR '. as \$line | try (fromjson | del(.stack_trace) , .stack_trace) catch \$line'"
 
 export OPENAI_API_BASE=https://api.githubcopilot.com
+# Set OPENAI_API_KEY outside version control, for example in a local secret manager.
 
 # Function to perform a DTF sanity check using curl with provided user, password, tenant, and URL.
 curldtf() {
