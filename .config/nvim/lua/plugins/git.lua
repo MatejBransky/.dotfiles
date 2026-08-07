@@ -15,6 +15,16 @@ return {
         end,
         desc = "Lazygit (Root Dir)",
       },
+      {
+        "<leader>gD",
+        function()
+          Snacks.lazygit({
+            cwd = vim.env.HOME,
+            args = { "--git-dir=" .. vim.env.HOME .. "/.cfg", "--work-tree=" .. vim.env.HOME },
+          })
+        end,
+        desc = "Lazygit (Dotfiles)",
+      },
     },
   },
   {
