@@ -135,6 +135,29 @@ cfg ls-files
 
 Neovim pluginy mají vlastní lockfile `~/.config/nvim/lazy-lock.json`, který je součástí repozitáře. Aktualizace pluginů proto commituj spolu s konfigurací, která je používá.
 
+## Git identity a SSH
+
+Globální `~/.gitconfig` používá `includeIf`, takže pracovní a osobní repozitáře mají oddělenou identitu:
+
+```ini
+[includeIf "gitdir:~/Developer/work/"]
+    path = ~/Developer/work/.gitconfig
+[includeIf "gitdir:~/Developer/personal/"]
+    path = ~/Developer/personal/.gitconfig
+[includeIf "gitdir:~/.cfg"]
+    path = ~/Developer/personal/.gitconfig
+```
+
+Bare dotfiles repo je osobní repozitář, proto `~/.cfg` používá osobní jméno, e-mail, SSH signing key a osobní `core.sshCommand`. Privátní SSH klíč není v souborech; poskytuje ho Bitwarden SSH agent. Veřejný `~/.ssh/id_pub_personal` slouží pouze jako identifikátor pro SSH konfiguraci.
+
+Ověření efektivního nastavení:
+
+```bash
+cfg config --get user.name
+cfg config --get user.email
+cfg config --get core.sshCommand
+```
+
 ## Bezpečnost
 
 Do repozitáře nepatří:

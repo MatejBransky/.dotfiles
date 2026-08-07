@@ -1,5 +1,6 @@
 # The bare repository uses $HOME as its work tree. Track only explicit paths.
 *
+!README.md
 !.zshrc
 !.zprofile
 !.gitconfig
