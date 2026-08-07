@@ -8,6 +8,8 @@
     path = ~/Developer/work/.gitconfig
 [includeIf "gitdir:~/Developer/personal/"]
     path = ~/Developer/personal/.gitconfig
+[includeIf "gitdir:~/.cfg"]
+    path = ~/Developer/personal/.gitconfig
 [alias]
   st = "status -s -b"
   c = "commit"
