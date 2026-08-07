@@ -50,6 +50,11 @@ alias gc='git commit'
 alias lg='lazygit'
 alias cfgui='lazygit --git-dir="$HOME/.cfg" --work-tree="$HOME"'
 
+function cfgvim() (
+  builtin cd -- "$HOME" || return
+  GIT_DIR="$HOME/.cfg" GIT_WORK_TREE="$HOME" nvim "$@"
+)
+
 # node (fnm)
 register_command 'eval "$(fnm env --use-on-cd --shell zsh)"' $PRIORITY_3
 
