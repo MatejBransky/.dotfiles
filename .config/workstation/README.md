@@ -1,17 +1,17 @@
 # Workstation Dotfiles
 
-Jednotný bare Git repozitář pro konfiguraci pracovního prostředí.
+Single bare Git repository for the workstation configuration.
 
-Repozitář používá:
+The repository uses:
 
-- `~/.cfg` jako Git directory
-- `$HOME` jako Git work tree
-- `Brewfile` jako seznam přímých Homebrew závislostí
-- `git-exclude` jako explicitní allowlist sledovaných souborů
+- `~/.cfg` as the Git directory
+- `$HOME` as the Git work tree
+- `Brewfile` as the list of direct Homebrew dependencies
+- `git-exclude` as an explicit allowlist of tracked files
 
-## Co repozitář obsahuje
+## Contents
 
-- `~/.zshrc` a `~/.zprofile`
+- `~/.zshrc` and `~/.zprofile`
 - `~/.gitconfig`
 - `~/.config/zsh/`
 - `~/.config/nvim/`
@@ -21,18 +21,18 @@ Repozitář používá:
 - `~/.config/opencode/`
 - `~/.config/workstation/`
 
-Lokální data, secrets, `.claude` overrides, Node dependencies, screenshoty a vendored Neovim `externals/` se nesledují.
+Local data, secrets, `.claude` overrides, Node dependencies, screenshots and vendored Neovim `externals/` are not tracked.
 
-## Nový stroj
+## New Machine
 
-Nejprve musí být dostupný Git a přístup k repozitáři. Na macOS je Git obvykle součástí Command Line Tools.
+Git access and repository access are required. On macOS, Git is usually provided by the Command Line Tools.
 
 ```bash
-git clone --bare git@github.com:USER/workstation.git "$HOME/.cfg"
+git clone --bare git@github.com:MatejBransky/.dotfiles.git "$HOME/.cfg"
 git --git-dir="$HOME/.cfg" --work-tree="$HOME" checkout main
 ```
 
-Po checkoutu se nastaví allowlist a nainstalují Homebrew balíky:
+Apply the allowlist and install Homebrew packages:
 
 ```bash
 cp "$HOME/.config/workstation/git-exclude" "$HOME/.cfg/info/exclude"
@@ -40,18 +40,18 @@ brew bundle --file="$HOME/.config/workstation/Brewfile" --no-upgrade
 source "$HOME/.zshrc"
 ```
 
-Jakmile je repozitář jednou checkoutnutý, lze stejné kroky opakovat bootstrap skriptem:
+Once the repository has been checked out, the same steps can be repeated with the bootstrap script:
 
 ```bash
 sh "$HOME/.config/workstation/bootstrap.sh" \
-  git@github.com:USER/workstation.git
+  git@github.com:MatejBransky/.dotfiles.git
 ```
 
-Skript nainstaluje Homebrew, naklonuje bare repo, provede checkout a spustí `brew bundle`. Na úplně čistém stroji je potřeba skript nejprve získat mimo tento checkout, nebo použít ruční sekvenci výše.
+The script installs Homebrew, clones the bare repository when needed, checks out the files and runs `brew bundle`. On a completely empty machine, obtain the script separately or use the manual sequence above first.
 
-## Běžné použití
+## Daily Use
 
-Shell funkce `cfg` pracuje s bare repem bez ohledu na aktuální adresář:
+The `cfg` shell function operates on the bare repository from any directory:
 
 ```bash
 cfg status
@@ -62,28 +62,28 @@ cfg commit -m "feat: update shell configuration"
 cfg push
 ```
 
-Dotfiles LazyGit:
+Open the dotfiles repository in LazyGit:
 
 ```bash
 cfgui
 ```
 
-Dotfiles Neovim:
+Open the dotfiles work tree in Neovim:
 
 ```bash
 cfgvim
 ```
 
-`cfgvim` otevře Neovim s `$HOME` jako worktree a nastaví `GIT_DIR` na `~/.cfg`. V Neovimu otevře `<leader>gD` LazyGit pro dotfiles. Klávesa `<leader>gg` zůstává určena pro aktuální projekt/root repo.
+`cfgvim` opens Neovim with `$HOME` as the work tree and sets `GIT_DIR` to `~/.cfg`. Inside Neovim, `<leader>gD` opens LazyGit for the dotfiles repository. `<leader>gg` remains assigned to the current project/root repository.
 
-## Přidání nové konfigurace
+## Adding Configuration
 
-1. Přidej cestu do `.config/workstation/git-exclude`.
-2. Přidej stejnou cestu také do `~/.cfg/info/exclude`, aby ochrana platila okamžitě.
-3. Přidej soubor přes `cfg add`.
-4. Zkontroluj diff a commitni změnu.
+1. Add the path to `.config/workstation/git-exclude`.
+2. Add the same path to `~/.cfg/info/exclude` so the protection applies immediately.
+3. Add the file with `cfg add`.
+4. Review the diff and commit the change.
 
-Příklad:
+Example:
 
 ```gitignore
 !.config/tmux/
@@ -96,11 +96,11 @@ cfg diff --cached
 cfg commit -m "feat: add tmux configuration"
 ```
 
-Allowlist začíná pravidlem `*`, takže nový soubor nejde omylem commitnout bez explicitního povolení. `cfg add -f` toto pravidlo obchází a používej ho jen vědomě.
+The allowlist starts with `*`, so a new file cannot be committed accidentally without being explicitly enabled. `cfg add -f` bypasses this protection and should only be used deliberately.
 
 ## Homebrew
 
-`Brewfile` obsahuje přímé nástroje, na kterých konfigurace závisí. Aktualizaci seznamu prováděj ručně:
+`Brewfile` contains the direct tools required by the configuration. Maintain the list manually:
 
 ```bash
 brew bundle add ripgrep --file="$HOME/.config/workstation/Brewfile"
@@ -108,11 +108,11 @@ brew bundle check --file="$HOME/.config/workstation/Brewfile" --no-upgrade
 brew bundle install --file="$HOME/.config/workstation/Brewfile" --no-upgrade
 ```
 
-Homebrew je rolling-release a `Brewfile` není přesný version lockfile. Přidání nástroje do manifestu tedy deklaruje jeho přítomnost, ne konkrétní historickou verzi.
+Homebrew is rolling release and `Brewfile` is not an exact version lockfile. Adding a tool declares its presence, not a specific historical version.
 
-## Aktualizace a údržba
+## Updates and Maintenance
 
-Po změně na jiném stroji:
+After changes from another machine:
 
 ```bash
 cfg pull --ff-only
@@ -120,24 +120,24 @@ cfg checkout
 brew bundle install --file="$HOME/.config/workstation/Brewfile" --no-upgrade
 ```
 
-Lokální kontrola:
+Run the local health check:
 
 ```bash
 sh "$HOME/.config/workstation/doctor.sh"
 ```
 
-Kontrola, co je sledované:
+Inspect tracked files:
 
 ```bash
 cfg status
 cfg ls-files
 ```
 
-Neovim pluginy mají vlastní lockfile `~/.config/nvim/lazy-lock.json`, který je součástí repozitáře. Aktualizace pluginů proto commituj spolu s konfigurací, která je používá.
+Neovim plugins have their own lockfile at `~/.config/nvim/lazy-lock.json`, which is part of this repository. Commit plugin updates together with the configuration that uses them.
 
-## Git identity a SSH
+## Git Identity and SSH
 
-Globální `~/.gitconfig` používá `includeIf`, takže pracovní a osobní repozitáře mají oddělenou identitu:
+The global `~/.gitconfig` uses `includeIf` to keep work and personal identities separate:
 
 ```ini
 [includeIf "gitdir:~/Developer/work/"]
@@ -148,9 +148,9 @@ Globální `~/.gitconfig` používá `includeIf`, takže pracovní a osobní rep
     path = ~/Developer/personal/.gitconfig
 ```
 
-Bare dotfiles repo je osobní repozitář, proto `~/.cfg` používá osobní jméno, e-mail, SSH signing key a osobní `core.sshCommand`. Privátní SSH klíč není v souborech; poskytuje ho Bitwarden SSH agent. Veřejný `~/.ssh/id_pub_personal` slouží pouze jako identifikátor pro SSH konfiguraci.
+The dotfiles repository is personal, so `~/.cfg` uses the personal name, email, SSH signing key and personal `core.sshCommand`. The private SSH key is not stored in files; it is provided by the Bitwarden SSH agent. The public `~/.ssh/id_pub_personal` file only identifies the key used by SSH.
 
-Ověření efektivního nastavení:
+Verify the effective configuration:
 
 ```bash
 cfg config --get user.name
@@ -158,26 +158,21 @@ cfg config --get user.email
 cfg config --get core.sshCommand
 ```
 
-## Bezpečnost
+## Security
 
-Do repozitáře nepatří:
+Never commit:
 
-- SSH privátní klíče
-- API keys, access tokens a passwords
-- `.env` soubory
-- Bitwarden nebo jiné credential databáze
-- lokální permission overrides
+- SSH private keys
+- API keys, access tokens or passwords
+- `.env` files
+- Bitwarden or other credential databases
+- Local permission overrides
 
-Před prvním pushnutím zkontroluj:
+Before the first push, review:
 
 ```bash
 cfg diff --cached
 cfg ls-files
 ```
 
-Repozitář zatím nemá nastavený remote. Po vytvoření vzdáleného repozitáře:
-
-```bash
-cfg remote add origin git@github.com:USER/workstation.git
-cfg push -u origin main
-```
+The remote is configured as `git@github.com:MatejBransky/.dotfiles.git`. The old pre-migration `main` is preserved as `backup/pre-bare-repo-2026-08-07`.

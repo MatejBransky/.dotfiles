@@ -1,8 +1,8 @@
 # Dotfiles
 
-Bare Git repository pro osobní workstation setup.
+Bare Git repository for the personal workstation setup.
 
-## Rychlý start
+## Quick Start
 
 ```bash
 git clone --bare git@github.com:MatejBransky/.dotfiles.git "$HOME/.cfg"
@@ -12,7 +12,7 @@ brew bundle --file="$HOME/.config/workstation/Brewfile" --no-upgrade
 source "$HOME/.zshrc"
 ```
 
-Pro běžnou práci:
+For daily use:
 
 ```bash
 cfg status
@@ -20,6 +20,6 @@ cfgui
 cfgvim
 ```
 
-Kompletní dokumentace je v [`~/.config/workstation/README.md`](.config/workstation/README.md).
+Full documentation is available in [`~/.config/workstation/README.md`](.config/workstation/README.md).
 
-Repozitář používá osobní Git identitu přes `includeIf` pro `~/.cfg`. Pracovní repozitáře v `~/Developer/work/` používají pracovní identitu; osobní repozitáře v `~/Developer/personal/` a dotfiles používají osobní identitu. SSH privátní klíče poskytuje Bitwarden agent.
+The repository uses the personal Git identity through `includeIf` for `~/.cfg`. Repositories in `~/Developer/work/` use the work identity; repositories in `~/Developer/personal/` and this dotfiles repository use the personal identity. SSH private keys are provided by the Bitwarden agent.
