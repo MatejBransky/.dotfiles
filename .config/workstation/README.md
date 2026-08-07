@@ -212,6 +212,31 @@ The SSH agent must be running and unlocked before Git operations that use SSH. T
 
 The `core.sshCommand` setting selects the correct public-key identity for each repository scope. Bitwarden then supplies the corresponding private key through its agent.
 
+## Environment Variables
+
+Most variables are set by the shell configuration or provided by macOS. The setup does not require a checked-in `.env` file.
+
+| Variable | Required | Purpose | Source |
+|---|---:|---|---|
+| `HOME` | Yes | User home directory used by all dotfiles paths | macOS |
+| `PATH` | Yes | Finds Homebrew and the installed tools | macOS, Homebrew and shell setup |
+| `SSH_AUTH_SOCK` | For SSH | Points Git/OpenSSH to the Bitwarden SSH agent socket | Local machine setup |
+| `EDITOR` | Recommended | Default editor; set to `nvim` | `~/.config/zsh/dev.zsh` |
+| `XDG_CONFIG_HOME` | Recommended | Configuration root; set to `$HOME/.config` | `~/.config/zsh/path.zsh` |
+| `PYENV_ROOT` | If using pyenv | pyenv installation path; defaults to `$HOME/.pyenv` | `~/.config/zsh/path.zsh` |
+| `PNPM_HOME` | If using pnpm | pnpm executable directory; set to `$HOME/Library/pnpm` | `~/.config/zsh/dev.zsh` |
+| `FZF_DEFAULT_COMMAND` | No | Default file listing command for fzf | `~/.config/zsh/dev.zsh` |
+| `FZF_CTRL_T_COMMAND` | No | File listing command used by fzf `Ctrl-T` | `~/.config/zsh/dev.zsh` |
+| `HOMEBREW_NO_ENV_HINTS` | No | Disables Homebrew environment hints | `~/.config/zsh/dev.zsh` |
+| `OPENAI_API_BASE` | No | API endpoint used by company-specific shell helpers | `~/.config/zsh/company.zsh` |
+| `OPENAI_API_KEY` | Only for API helpers | API credential for integrations that require it | Local secret manager, never Git |
+
+`GIT_DIR`, `GIT_WORK_TREE`, `NVIM_CWD_FILE` and `LAZYGIT_NEW_DIR_FILE` are short-lived internal variables used by `cfgvim` and the Neovim/LazyGit integration. They do not need to be configured manually.
+
+`SSH_AUTH_SOCK` must point to a running, unlocked Bitwarden SSH agent before using SSH remotes. The socket path is machine-specific and must not be replaced with a private key in this repository.
+
+`OPENAI_API_KEY` is intentionally not stored in the repository. Set it only in the local shell, a password manager integration or another machine-local secret mechanism when a helper actually needs it.
+
 Verify the effective configuration:
 
 ```bash
