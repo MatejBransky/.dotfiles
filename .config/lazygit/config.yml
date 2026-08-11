@@ -6,8 +6,9 @@ gui:
       - bold
 git:
   overrideGpg: true
-  pagers:
+  diffRenderers:
     - colorArg: always
+      type: rawGit
 os:
   # source: https://github.com/LazyVim/LazyVim/discussions/543#discussioncomment-5808573
   edit: "nvim --server $NVIM --remote-tab {{filename}}"
