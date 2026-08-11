@@ -9,6 +9,10 @@ Reference for AI agents using the `cup` CLI tool. Covers task management, sprint
 
 > **Version check:** Run `cup --version`. If your installed version is older than 1.27.1, update with `npm install -g @krodak/clickup-cli` and refresh this skill with `cup skill`.
 
+## Mutation Approval Gate
+
+Never perform a mutating ClickUp action without the user's explicit final review and approval immediately beforehand. This includes creating or editing tasks, posting or editing comments and replies, changing status, assignees, fields, tags, dates, dependencies, checklists, time entries, docs, goals, views, chat messages, and any other write operation. First present the exact command and intended effect; wait for explicit approval; only then run it. Read-only commands may be run without approval. Do not treat a general request to inspect, understand, or prepare changes as approval to execute them.
+
 ## Install & Configure
 
 ### Prerequisites
