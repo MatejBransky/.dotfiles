@@ -29,7 +29,7 @@ References are resolved relative to the git root (or cwd if not in a repo).
 | `:CodeNotesClear` | Clear all notes |
 | `:CodeNotesSave` | Save notes for the current project |
 | `:CodeNotesLoad` | Reload notes for the current project |
-| `:CodeNotesClose` | Close the notes window with a save/discard confirmation |
+| `:CodeNotesClose` | Close the notes window and keep the buffer available for reuse |
 
 ## Keymaps
 

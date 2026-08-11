@@ -311,14 +311,11 @@ local function set_buffer_keymaps(buf)
   end)
   vim.keymap.set("n", "q", function()
     M.close()
-  end, { buffer = buf, silent = true, desc = "Close code notes safely" })
-  vim.keymap.set("n", "<leader>bd", function()
-    M.close()
-  end, { buffer = buf, silent = true, desc = "Close code notes safely" })
+  end, { buffer = buf, silent = true, desc = "Close code notes window" })
   for _, shortcut in ipairs({ "<C-w>q", "<C-w>c" }) do
     vim.keymap.set("n", shortcut, function()
       M.close()
-    end, { buffer = buf, silent = true, desc = "Close code notes safely" })
+    end, { buffer = buf, silent = true, desc = "Close code notes window" })
   end
 end
 
@@ -561,13 +558,10 @@ function M.load()
   vim.notify("Code notes loaded for " .. M.root, vim.log.levels.INFO)
 end
 
---- Close the current notes window without silently losing edits.
+--- Close the current notes window while keeping its buffer available for reuse.
 function M.close()
   local buf = M.bufnr
   if not (buf and vim.api.nvim_buf_is_valid(buf)) then
-    return
-  end
-  if not confirm_discard(buf, M.root) then
     return
   end
   local win = vim.api.nvim_get_current_win()

@@ -108,7 +108,7 @@ return {
       end, { desc = "Load code notes for the current project" })
       vim.api.nvim_create_user_command("CodeNotesClose", function()
         require("libs.code_notes").close()
-      end, { desc = "Close code notes safely" })
+      end, { desc = "Close code notes window" })
     end,
   },
 }

@@ -333,7 +333,7 @@ return {
       shortcut = "<leader>ol",
     },
     close = {
-      desc = "Close code notes safely",
+      desc = "Close code notes window",
       mode = "n",
       shortcut = "<leader>oq",
     },

@@ -76,7 +76,7 @@ T["storage"]["uses markdown syntax without a markdown filetype"] = function()
   vim.fn.delete(storage, "rf")
 end
 
-T["storage"]["does not close when the user cancels"] = function()
+T["storage"]["closes without prompting for unsaved changes"] = function()
   local original_cwd = vim.fn.getcwd()
   local original_storage = notes.config.storage_dir
   local original_confirm = vim.fn.confirm
@@ -88,20 +88,13 @@ T["storage"]["does not close when the user cancels"] = function()
   notes.open()
   vim.api.nvim_buf_set_lines(notes.bufnr, 0, -1, false, { "keep me" })
   local notes_win = vim.api.nvim_get_current_win()
-  local prompt
-  local title
-  vim.fn.confirm = function(message, _, _, dialog_title)
-    prompt = message
-    title = dialog_title
-    return 3
+  vim.fn.confirm = function()
+    error("regular notes close must not prompt")
   end
 
   notes.close()
 
-  MiniTest.expect.equality(vim.api.nvim_win_is_valid(notes_win), true)
-  MiniTest.expect.equality(title, "Code Notes")
-  MiniTest.expect.equality(prompt:match("Unsaved changes in:"), "Unsaved changes in:")
-  MiniTest.expect.equality(prompt:match("Save these notes before closing%?"), "Save these notes before closing?")
+  MiniTest.expect.equality(vim.api.nvim_win_is_valid(notes_win), false)
   vim.fn.confirm = original_confirm
   vim.fn.chdir(original_cwd)
   notes.setup({ storage_dir = original_storage })
