@@ -3,6 +3,8 @@ local keybindings = require("keybindings")
 return {
   {
     "neovim/nvim-lspconfig",
+    -- out of date LazyVim (see: https://github.com/LazyVim/LazyVim/pull/7233#issuecomment-5277893015)
+    commit = "47657ffa9121d62bb3dd9a36530a11caaa10eab9",
     init = function()
       local function fix_all_kind(bufnr)
         for _, client in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do

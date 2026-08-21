@@ -19,3 +19,13 @@ esac
 
 # Vite+ bin (https://viteplus.dev)
 . "$HOME/.vite-plus/env"
+
+# bun completions
+[ -s "/Users/matejbransky/.bun/_bun" ] && source "/Users/matejbransky/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Added by codebase-memory-mcp install
+export PATH="/Users/matejbransky/.local/bin:$PATH"
