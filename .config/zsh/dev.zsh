@@ -2,6 +2,9 @@
 export HOMEBREW_NO_ENV_HINTS=true
 register_command 'eval "$(/opt/homebrew/bin/brew shellenv)"' $PRIORITY_3
 
+# PostgreSQL client matching the Docker Compose database (PostgreSQL 17).
+export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
+
 # syntax highlighting
 register_command 'source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh' $PRIORITY_3
 
@@ -64,12 +67,27 @@ export PATH="$PNPM_HOME:$PATH"
 alias pm="pnpm"
 alias pi="pnpm install"
 
-# Nx
-alias move="pnpm nx g mv"
+# For scripts — get a session key on demand instead of connecting to Desktop
+# during every shell startup.
+function bw-unlock() {
+  local bw_status
+  bw_status=$(bw status --raw) || return 1
 
-alias js="jsonschema metaschema -h"
+  if [[ -n "${BW_SESSION:-}" && "$bw_status" == *'"status":"unlocked"'* ]]; then
+    return 0
+  fi
 
-alias gcp="opencode run --model github-copilot/claude-sonnet-4 do !gcp"
+  local bw_session
+  bw_session=$(BWBIO_IPC_SOCKET_PATH="$HOME/Library/Caches/com.bitwarden.desktop/s.bw" bwbio unlock --raw) || return 1
+  export BW_SESSION="$bw_session"
+}
+
+function opencode-with-secrets() {
+  bw-unlock || return 1
+  command opencode "$@"
+}
+
+alias ocs='opencode-with-secrets'
 
 # fzf - command-line fuzzy finder
 # respect .gitignore

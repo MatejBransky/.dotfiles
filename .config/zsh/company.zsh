@@ -1,29 +1,21 @@
-alias slice="pnpm nx g @ataccama/nx-utils:slice"
-alias sap="pnpm start:nocheck"
-alias pap="pnpm playwright test --config=apps/one-fe-e2e/playwright.config.ts"
-alias pwrap="pnpm exec playwright show-report apps/one-fe-e2e/output/html-report"
-alias sdt="pnpm nx serve storybook-dt"
-alias pdt="pnpm nx playwright-test storybook-dt"
-alias tdt-mmm="pnpm tsc --project libs/dt/integrations/mmm/tsconfig.lib.json --noEmit"
-alias tmmm-trans="pnpm tsc --project libs/mmm/modules/transformations/tsconfig.lib.json --noEmit"
-alias ldt-mmm="pnpm nx lint dt-integration-mmm"
-alias lmmm-trans="pnpm nx lint mmm-modules-transformations"
-alias fdt-mmm="pnpm nx format:write dt-integration-mmm"
-alias fmmm-trans="pnpm nx format:write mmm-modules-transformations"
+# Local PostgreSQL database from Docker Compose (host-side connection).
+export DEV_DB_HOST=localhost
+export DEV_DB_PORT=5433
+export DEV_DB_USER=postgres
+export DEV_DB_NAME=ribbon
 
-# Alias 'atalog' processes JSON input using 'jq'.
-# It attempts to parse each line of input as JSON. If the input is valid JSON, it removes the 'stack_trace' field 
-# and outputs the remaining JSON. The 'stack_trace' information is preserved as a separate string, 
-# which can span multiple lines for better readability. If parsing fails, it outputs the original line unchanged.
-# Example usage: 
-# echo '{"message": "Error occurred", "stack_trace": "at line 1"}' | atalog
-# Output:
-# {"message": "Error occurred"}
-# stack_trace: at line 1
-alias atalog="jq -rR '. as \$line | try (fromjson | del(.stack_trace) , .stack_trace) catch \$line'"
+# Load the dev DB password from Bitwarden only when it is needed.
+function dev-db-env() {
+  if [[ -z ${BW_SESSION:-} ]]; then
+    echo "Run bw-unlock first."
+    return 1
+  fi
 
-export OPENAI_API_BASE=https://api.githubcopilot.com
-# Set OPENAI_API_KEY outside version control, for example in a local secret manager.
+  local password
+  password="$(bw get password 'Momence (dev db)')" || return 1
+  export DEV_DB_PASSWORD="$password"
+  export DEV_DB_URL="postgres://${DEV_DB_USER}:${DEV_DB_PASSWORD}@${DEV_DB_HOST}:${DEV_DB_PORT}/${DEV_DB_NAME}"
+}
 
 # Function to perform a DTF sanity check using curl with provided user, password, tenant, and URL.
 curldtf() {
