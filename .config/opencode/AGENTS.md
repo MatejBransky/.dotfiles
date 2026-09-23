@@ -119,3 +119,21 @@ ALWAYS prefer MCP graph tools over grep/glob/file-search for code discovery.
 - Before spawning a subagent, query the graph and coverage in the parent. Pass the tier, project, generation/freshness, bounded scope, queries and pagination state, qualified symbols, paths, call-chain findings, coverage evidence with ranges/reasons, source fallback already performed, and unresolved questions in the delegated task context.
 - Do not assume subagents inherit MCP access or the parent conversation. If a child lacks MCP tools, it must not call or claim MCP access. It should use the supplied evidence and read/grep exact source, especially every reported missed-coverage range.
 <!-- codebase-memory-mcp:end -->
+
+## Personal Dotfiles Repository
+
+This workstation manages dotfiles with a Git directory at `~/.cfg` and the home directory (`$HOME`) as its working tree. The repository is hosted at `git@github.com:MatejBransky/.dotfiles.git`. Its local Git config has `core.bare=false` and `core.worktree=$HOME`; this is a separate-Git-dir/work-tree setup commonly described as a bare-style dotfiles repo.
+
+### Daily commands
+
+The `cfg` shell function runs `git --git-dir="$HOME/.cfg" --work-tree="$HOME"` with its arguments, so it works from any directory. `cfgui` opens LazyGit against the same repo. `cfgvim` starts Neovim at `$HOME` with `GIT_DIR` and `GIT_WORK_TREE` set for dotfiles.
+
+Use `cfg status`, `cfg diff`, `cfg ls-files`, and `cfg diff --cached` to inspect state. For a new path, first add it to `~/.config/workstation/git-exclude` and copy that allowlist to `~/.cfg/info/exclude`; then `cfg add <path>`, inspect the staged diff, and commit. The exclude rules start with `*` and explicitly allow selected files/directories, reducing accidental tracking of home-directory contents. `cfg add -f` bypasses that safeguard and should be deliberate.
+
+### Identity and safety
+
+The global `~/.gitconfig` uses `includeIf "gitdir:~/.cfg"` to load the personal Git identity from `~/Developer/personal/.gitconfig`. SSH uses the public identity file while Bitwarden's SSH agent supplies the private key. Never put credentials, tokens, passwords, or private keys in tracked dotfiles; use Bitwarden or an appropriate secret mechanism.
+
+At the time this note was written (2026-09-23), local `main` was at `2db68c3`, `origin/main` at `5957445`, and local `main` was 7 commits ahead with the remote tip as its ancestor. Local `main` had no upstream configured. Treat those as an observation, not guaranteed current state: always inspect `cfg status`, branch refs, and divergence before syncing or changing history. The branch `backup/pre-bare-repo-2026-08-07` preserves the pre-migration history.
+
+The workstation's `~/.zshenv` was observed to contain a production database credential. It is excluded from this repository, but plaintext shell configuration is not a safe place for credentials. Do not read, print, copy, or commit the value; if it is still active, rotate it and load it from a secret manager instead.
