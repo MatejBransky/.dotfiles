@@ -253,6 +253,63 @@ return {
   },
 
   --
+  -- Snacks picker and explorer
+  --
+  snacks = {
+    picker = {
+      findFiles = {
+        desc = "Find files",
+        mode = "n",
+        shortcut = "<M-,>",
+      },
+      cancel = {
+        desc = "Cancel picker",
+        mode = { "n", "i", "x" },
+        shortcut = "<C-c>",
+      },
+      togglePreview = {
+        desc = "Toggle preview",
+        mode = { "n", "i" },
+        shortcut = "<a-p>",
+      },
+      cyclePreview = {
+        desc = "Cycle preview layout",
+        mode = "n",
+        shortcut = "<C-p>",
+      },
+    },
+    explorer = {
+      show = {
+        desc = "Show explorer",
+        mode = "n",
+        shortcut = "<M-\\>",
+      },
+      setWorkingDirectory = {
+        desc = "Set tab working directory",
+        mode = { "n", "i" },
+        shortcut = "<C-g>",
+      },
+      toggleGitStatus = {
+        desc = "Toggle Git-changed files only",
+        mode = { "n", "i" },
+        shortcut = "S",
+      },
+    },
+    gitLog = {
+      openFile = {
+        desc = "Open File",
+        mode = { "n", "i" },
+        shortcut = "<CR>",
+      },
+      openDiffview = {
+        desc = "Open Diffview (commit)",
+        mode = { "n", "i" },
+        shortcut = "<M-g>",
+      },
+    },
+  },
+
+  --
   -- Misc reference operations
   --
   references = {
