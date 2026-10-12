@@ -17,6 +17,11 @@ For version-specific docs, use `/org/project/version` from the `library` output 
 If a command fails with a quota error, inform the user and suggest `npx ctx7@latest login` or setting `CONTEXT7_API_KEY` env var for higher limits. Do not silently fall back to training data.
 <!-- context7 -->
 
+## Bitwarden Access
+
+- Use the `BW_SESSION` already provided to OpenCode; do not routinely check Bitwarden status or unlock the vault yourself.
+- If a Bitwarden operation reports that the vault is locked, stop and ask the user how to proceed rather than running an unlock command. Never print, log, or include the session value in tool arguments or chat.
+
 ## SSH & Git
 
 SSH keys are stored in **Bitwarden**, not as files in `~/.ssh/`. The `~/.ssh/id_pub_*` files are public keys only — Bitwarden's SSH agent provides the matching private keys on demand.
@@ -60,6 +65,23 @@ GIT_SSH_COMMAND="ssh -i ~/.ssh/id_pub_work" git clone git@github.com:MatejBransk
 - **For personal repos**: use the default key (Bitwarden handles it automatically).
 - When a git command fails with SSH errors, check if Bitwarden is running and unlocked first.
 
+### Stacked branches (vanilla git)
+
+Global `~/.gitconfig` already enables:
+
+- `rerere.enabled=true` — reuse recorded conflict resolutions
+- `rebase.updateRefs=true` — when rebasing a range, auto-move branch refs that pointed into that range (downstream stack tips)
+- alias `fpstack` — force-push (`--force-with-lease`) all local branch tips in the current stack above `origin/main`
+
+Prefer this over manually rebasing each stacked branch one by one.
+
+**Workflow**
+
+- Prefer operating from the **tip** of the stack and rebasing the rewritten range so `updateRefs` moves intermediate branch labels.
+- A plain commit on a middle branch does **not** move later branches; rebase the tip onto the updated middle tip (or rewrite via tip rebase / interactive rebase) so the stack stays linear.
+- After restacking: `git fpstack` to push the whole stack (do not force-push `main`/`master`).
+- Source pattern: https://www.codetinkerer.com/2023/10/01/stacked-branches-with-vanilla-git.html
+
 ## Local Development Database
 
 The local Momence development PostgreSQL database runs in Docker Compose.
@@ -76,7 +98,7 @@ The local Momence development PostgreSQL database runs in Docker Compose.
 ### Rules
 
 - Prefer the local PostgreSQL 17 client (`psql`) for normal queries.
-- Load the password from Bitwarden with `bw-unlock` followed by `dev-db-env`; never hardcode or print it.
+- Follow **Bitwarden Access** before retrieving the password, then use `dev-db-env`; never hardcode or print it.
 - Connect from the host with `psql -h localhost -p 5433 -U postgres -d ribbon`.
 - If client/server compatibility is in doubt, use the matching client inside the container: `docker exec -e PGPASSWORD="$DEV_DB_PASSWORD" -it momence_postgres psql -U postgres -d ribbon`.
 - Use the Docker-matched PostgreSQL major version for `pg_dump`, `pg_restore`, and migration tooling.
