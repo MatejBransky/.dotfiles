@@ -84,7 +84,7 @@ function bw-unlock() {
 
 function opencode-with-secrets() {
   bw-unlock || return 1
-  command opencode "$@"
+  command opencode --standalone "$@"
 }
 
 alias ocs='opencode-with-secrets'

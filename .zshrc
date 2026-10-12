@@ -29,3 +29,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # Added by codebase-memory-mcp install
 export PATH="/Users/matejbransky/.local/bin:$PATH"
+
+# opencode
+export PATH=/Users/matejbransky/.opencode/bin:$PATH
