@@ -3,6 +3,46 @@ local keybindings = require("keybindings")
 -- NOTE: I don't know why but copilot suggestion keymap does not work if
 -- copilot-language-server is installed via mason.
 return {
+  -- {
+  --   "yetone/avante.nvim",
+  --   event = "VeryLazy",
+  --   version = false,
+  --   -- `make` builds from source and needs cargo. Use the prebuilt GitHub
+  --   -- artifacts instead (see yetone/avante.nvim `build.sh`).
+  --   build = "bash ./build.sh",
+  --   opts = {
+  --     provider = "cursor",
+  --     mode = "agentic",
+  --     acp_providers = {
+  --       cursor = {
+  --         command = os.getenv("HOME") .. "/.local/bin/agent",
+  --         args = { "acp" },
+  --         auth_method = "cursor_login",
+  --         env = {
+  --           HOME = os.getenv("HOME"),
+  --           PATH = os.getenv("PATH"),
+  --         },
+  --       },
+  --     },
+  --   },
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --     "MunifTanjim/nui.nvim",
+  --     "nvim-tree/nvim-web-devicons",
+  --     -- NOTE: Avante is intentionally missing from `file_types`/`ft`. Rendering
+  --     -- markdown in the chat buffer makes it flicker, because avante rewrites
+  --     -- the whole buffer on every stream chunk and the renderer re-applies its
+  --     -- virtual text each time. `file_types` must stay explicit: when it is
+  --     -- omitted, render-markdown derives it from the merged lazy `ft` list.
+  --     {
+  --       "MeanderingProgrammer/render-markdown.nvim",
+  --       opts = {
+  --         file_types = { "markdown" },
+  --       },
+  --       ft = { "markdown" },
+  --     },
+  --   },
+  -- },
   {
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
