@@ -31,6 +31,34 @@ return {
     "folke/snacks.nvim",
     keys = {
       { "<leader>gg", false },
+      {
+        keybindings.git.grepBranchFiles.shortcut,
+        function()
+          local root = LazyVim.root.git()
+          if not root then
+            vim.notify("Not inside a Git repository", vim.log.levels.WARN)
+            return
+          end
+
+          local files, err, base_ref = require("libs.branch_grep").changed_files(root)
+          if not files then
+            vim.notify(err, vim.log.levels.ERROR)
+            return
+          end
+          if #files == 0 then
+            vim.notify("No changed files against " .. base_ref .. " or in the working tree", vim.log.levels.INFO)
+            return
+          end
+
+          local pathspec = vim.tbl_map(function(file)
+            return ":(literal)" .. file
+          end, files)
+
+          Snacks.picker.git_grep({ cwd = root, pathspec = pathspec, untracked = true })
+        end,
+        mode = keybindings.git.grepBranchFiles.mode,
+        desc = keybindings.git.grepBranchFiles.desc,
+      },
     },
   },
   { "tpope/vim-rhubarb" }, -- github support for vim-fugitive
@@ -42,6 +70,15 @@ return {
       vim.keymap.set(keybindings.references.copyFilepath.mode, keybindings.references.copyFilepath.shortcut, function()
         vim.fn.setreg("*", reference.relative_path())
       end, { desc = keybindings.references.copyFilepath.desc, silent = true })
+
+      vim.keymap.set(keybindings.references.copyBufferName.mode, keybindings.references.copyBufferName.shortcut, function()
+        local buffer_name = vim.fn.expand("%:t")
+        if buffer_name == "" then
+          buffer_name = vim.fn.bufname()
+        end
+        vim.fn.setreg("*", buffer_name)
+        vim.notify("Copied: " .. buffer_name, vim.log.levels.INFO)
+      end, { desc = keybindings.references.copyBufferName.desc, silent = true })
 
       vim.keymap.set(keybindings.references.copyLineRef.mode, keybindings.references.copyLineRef.shortcut, function()
         local ref = reference.line_ref()
@@ -66,7 +103,14 @@ return {
       vim.keymap.set(
         keybindings.references.copyLineLink.mode,
         keybindings.references.copyLineLink.shortcut,
-        "<Cmd>.GBrowse!<CR>",
+        function()
+          local from, to = reference.line_range()
+          if from == to then
+            vim.cmd(from .. "GBrowse!")
+          else
+            vim.cmd(from .. "," .. to .. "GBrowse!")
+          end
+        end,
         { desc = keybindings.references.copyLineLink.desc, silent = true }
       )
 

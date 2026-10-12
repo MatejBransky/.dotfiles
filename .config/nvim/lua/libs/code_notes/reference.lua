@@ -149,10 +149,9 @@ function M.format(from, to)
   return string.format("%s#L%d", path, from)
 end
 
--- Reference string for the current cursor line or, in visual mode, the
--- selected range: "path#L10" or "path#L45-L67". Leaves visual mode after
--- capturing the range so callers can safely move the cursor/window.
-function M.line_ref()
+-- Current cursor line or, in visual mode, the selected range. Leaves visual
+-- mode after capturing the range so callers can safely move the cursor/window.
+function M.line_range()
   -- mode() still reports visual here because a Lua function rhs runs like
   -- <Cmd> and does not leave the current mode.
   if vim.fn.mode():match("[vV\22]") then
@@ -163,10 +162,18 @@ function M.line_ref()
     -- "x" flag processes the Esc synchronously, so a following startinsert is
     -- not cancelled by a queued Esc.
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "nx", false)
-    return M.format(from, to)
+    return from, to
   end
 
-  return M.format(vim.fn.line("."))
+  local line = vim.fn.line(".")
+  return line, line
+end
+
+-- Reference string for the current cursor line or, in visual mode, the
+-- selected range: "path#L10" or "path#L45-L67".
+function M.line_ref()
+  local from, to = M.line_range()
+  return M.format(from, to)
 end
 
 return M

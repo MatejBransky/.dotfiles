@@ -245,6 +245,11 @@ return {
       mode = "n",
       shortcut = "<leader>gp",
     },
+    grepBranchFiles = {
+      desc = "Grep branch and working-tree changes",
+      mode = "n",
+      shortcut = "<leader>ga",
+    },
   },
 
   --
@@ -270,6 +275,11 @@ return {
       desc = "Copy branch name",
       mode = "n",
       shortcut = "<leader>ob",
+    },
+    copyBufferName = {
+      desc = "Copy buffer filename",
+      mode = "n",
+      shortcut = "<leader>om",
     },
     copyFilepath = {
       desc = "Copy path to the current file",
