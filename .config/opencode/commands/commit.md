@@ -1,6 +1,6 @@
 ---
 description: Create high-quality git commits with auto-detected commit style
-subtask: true
+subagent: true
 ---
 
 # Commit
