@@ -4,4 +4,8 @@
 
 vim.g.scrollbar_v2_notice = false
 
+-- Content mapper files use a non-JSON extension so TypeScript can register them;
+-- open them as JSON to keep JSON syntax, jsonls and schema suggestions.
+vim.filetype.add({ extension = { jsonschema = "json" } })
+
 vim.o.showtabline = 0
