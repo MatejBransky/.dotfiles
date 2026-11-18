@@ -7,22 +7,37 @@ return {
     enabled = false,
   },
 
+  -- tsc (typescript-go) exits with code 1 even after a clean shutdown/exit, so
+  -- every LSP restart shows a scary "Client tsc quit with exit code 1" warning.
+  -- Hide that known false positive from notifications (the LSP log keeps it).
+  -- https://github.com/microsoft/TypeScript/issues/64742
+  {
+    "folke/noice.nvim",
+    opts = function(_, opts)
+      opts.routes = opts.routes or {}
+      table.insert(opts.routes, {
+        filter = { event = "notify", find = "^Client tsc quit with exit code" },
+        opts = { skip = true },
+      })
+    end,
+  },
+
   -- Scrollbar
   {
     "petertriho/nvim-scrollbar",
+    branch = "refactor/v2",
     event = "BufReadPost",
     opts = {
-      excluded_filetypes = { "prompt", "TelescopePrompt", "noice", "notify", "neo-tree" },
-      handlers = {
-        -- cursor = false,
+      exclude = {
+        filetypes = {
+          notify = true,
+          ["neo-tree"] = true,
+        },
+      },
+      providers = {
+        gitsigns = true,
       },
     },
-  },
-  {
-    "lewis6991/gitsigns.nvim",
-    opts = function()
-      require("scrollbar.handlers.gitsigns").setup()
-    end,
   },
 
   {

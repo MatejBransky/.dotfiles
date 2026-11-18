@@ -58,10 +58,21 @@ return {
         "<Cmd>checkhealth vim.lsp<CR>",
         { desc = keybindings.lsp.info.desc }
       )
+      -- "Client tsc quit with exit code 1" is a known tsc false positive on
+      -- clean shutdown, filtered out in the Noice route in lua/plugins/ui.lua.
+      local function restart_lsp()
+        if #vim.lsp.get_clients({ bufnr = 0 }) == 0 then
+          vim.notify("No LSP clients attached to the current buffer", vim.log.levels.WARN)
+          return
+        end
+
+        vim.cmd("lsp restart")
+      end
+
       vim.keymap.set(
         keybindings.lsp.log.mode,
         keybindings.lsp.restart.shortcut,
-        "<Cmd>lsp restart<CR>",
+        restart_lsp,
         { desc = keybindings.lsp.restart.desc }
       )
 
