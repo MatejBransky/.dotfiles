@@ -1,5 +1,53 @@
 local keybindings = require("keybindings")
 
+local function content_mapper_root(bufnr)
+  local root = vim.fs.root(bufnr, "tsconfig.json")
+  if not root then
+    return
+  end
+
+  local ok, lines = pcall(vim.fn.readfile, root .. "/tsconfig.json")
+  if ok and table.concat(lines, "\n"):find("contentMappers", 1, true) then
+    return root
+  end
+end
+
+local function typescript_root(bufnr)
+  return vim.fs.root(bufnr, {
+    "package-lock.json",
+    "yarn.lock",
+    "pnpm-lock.yaml",
+    "bun.lockb",
+    "bun.lock",
+    ".git",
+  }) or vim.fn.getcwd()
+end
+
+local function supports_lsp(bin, minor)
+  if vim.fn.executable(bin) ~= 1 then
+    return false
+  end
+
+  local out = vim.system({ bin, "--version" }, { text = true }):wait()
+  local version = vim.version.parse(out.stdout or "")
+  local wanted = minor or 0
+
+  return out.code == 0 and version ~= nil and (version.major > 7 or (version.major == 7 and version.minor >= wanted))
+end
+
+local function tsc_cmd(dispatchers, config, minor)
+  local root = (config or {}).root_dir or vim.fn.getcwd()
+  local local_bin = root .. "/node_modules/.bin/tsc"
+  local bin = supports_lsp(local_bin, minor) and local_bin or "tsc"
+
+  if not supports_lsp(bin, minor) then
+    vim.notify(("tsc: no TypeScript %s+ binary found"):format(minor and ("7." .. minor) or "7"), vim.log.levels.WARN)
+    return
+  end
+
+  return vim.lsp.rpc.start({ bin, "--lsp", "--stdio" }, dispatchers)
+end
+
 return {
   {
     "neovim/nvim-lspconfig",
@@ -113,6 +161,32 @@ return {
               desc = keybindings.lsp.nextRef.desc,
             },
           },
+        },
+        tsc = {
+          root_dir = function(bufnr, on_dir)
+            if content_mapper_root(bufnr) then
+              return
+            end
+
+            on_dir(typescript_root(bufnr))
+          end,
+          cmd = function(dispatchers, config)
+            return tsc_cmd(dispatchers, config, 0)
+          end,
+        },
+        ["tsgo-content-mapper"] = {
+          mason = false,
+          filetypes = { "typescript", "typescriptreact" },
+          init_options = { runExternalCode = true },
+          root_dir = function(bufnr, on_dir)
+            local root = content_mapper_root(bufnr)
+            if root then
+              on_dir(root)
+            end
+          end,
+          cmd = function(dispatchers, config)
+            return tsc_cmd(dispatchers, config, 1)
+          end,
         },
         lua_ls = {
           settings = {
