@@ -163,6 +163,9 @@ return {
           },
         },
         tsc = {
+          -- LazyVim's `tsc` server targets the monorepo root and does not
+          -- enable external code. Content-mapper projects get their own server
+          -- below, so `tsc` must not attach to them.
           root_dir = function(bufnr, on_dir)
             if content_mapper_root(bufnr) then
               return
@@ -174,9 +177,10 @@ return {
             return tsc_cmd(dispatchers, config, 0)
           end,
         },
-        ["tsgo-content-mapper"] = {
+        ["tsc-content-mapper"] = {
           mason = false,
           filetypes = { "typescript", "typescriptreact" },
+          -- This is the only server allowed to execute content mappers.
           init_options = { runExternalCode = true },
           root_dir = function(bufnr, on_dir)
             local root = content_mapper_root(bufnr)
