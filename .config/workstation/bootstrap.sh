@@ -4,6 +4,21 @@ set -eu
 REPO_URL=${1:?Usage: bootstrap.sh <git-repository-url>}
 CFG_DIR="$HOME/.cfg"
 BREWFILE="$HOME/.config/workstation/Brewfile"
+NODE_GLOBALS="$HOME/.config/workstation/node-globals"
+
+install_node_globals() {
+  [ -f "$1" ] || return 0
+  while read -r manager package _; do
+    case "$manager" in
+      '' | '#'*) continue ;;
+    esac
+    case "$manager" in
+      npm) npm install --global "$package" ;;
+      pnpm) pnpm add --global "$package" ;;
+      *) printf 'Unknown package manager in %s: %s\n' "$1" "$manager" >&2 ;;
+    esac
+  done <"$1"
+}
 
 if ! command -v brew >/dev/null 2>&1; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -29,5 +44,6 @@ if [ -f "$HOME/.config/workstation/git-exclude" ]; then
   cp "$HOME/.config/workstation/git-exclude" "$CFG_DIR/info/exclude"
 fi
 brew bundle --file="$BREWFILE" --no-upgrade
+install_node_globals "$NODE_GLOBALS"
 
 printf '%s\n' "Workstation setup installed. Start a new shell and run: cfg status"

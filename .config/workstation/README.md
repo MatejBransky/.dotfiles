@@ -7,6 +7,7 @@ The repository uses:
 - `~/.cfg` as the Git directory
 - `$HOME` as the Git work tree
 - `Brewfile` as the list of direct Homebrew dependencies
+- `node-globals` as the list of global npm/pnpm CLI packages
 - `git-exclude` as an explicit allowlist of tracked files
 
 ## Contents
@@ -110,6 +111,31 @@ brew bundle install --file="$HOME/.config/workstation/Brewfile" --no-upgrade
 
 Homebrew is rolling release and `Brewfile` is not an exact version lockfile. Adding a tool declares its presence, not a specific historical version.
 
+## Global Node Packages
+
+`node-globals` lists the global CLI packages installed with npm and pnpm. Each line has the form `<npm|pnpm> <package>`:
+
+```text
+pnpm varlock
+npm vercel
+```
+
+`bootstrap.sh` installs every entry after `brew bundle`. To apply the list to an existing machine:
+
+```bash
+while read -r manager package _; do
+  case "$manager" in '' | '#'*) continue ;; esac
+  case "$manager" in
+    npm) npm install --global "$package" ;;
+    pnpm) pnpm add --global "$package" ;;
+  esac
+done <"$HOME/.config/workstation/node-globals"
+```
+
+The pnpm global prefix is version-specific (`~/Library/pnpm/global/v11`), so it is recreated by the current pnpm major instead of being tracked. Versions are not pinned; add a package name with `@version` when a specific release matters.
+
+npm and corepack ship with Node, which `fnm` manages, and therefore are not listed.
+
 ## Updates and Maintenance
 
 After changes from another machine:
@@ -119,6 +145,8 @@ cfg pull --ff-only
 cfg checkout
 brew bundle install --file="$HOME/.config/workstation/Brewfile" --no-upgrade
 ```
+
+Global npm/pnpm packages are restored by `bootstrap.sh`; re-run the loop from [Global Node Packages](#global-node-packages) after editing `node-globals`.
 
 Run the local health check:
 

@@ -1,0 +1,24 @@
+# Global Node CLI packages, restored by bootstrap.sh.
+#
+# Format: <npm|pnpm> <package>
+# Versions are intentionally not pinned; the newest release is installed.
+# npm itself and corepack ship with Node (via fnm) and are not listed here.
+
+# Secret resolution for .env.schema files (used by the notes vault DB tooling).
+pnpm varlock
+pnpm @varlock/bitwarden-plugin
+
+# ClickUp task management via the `cup` CLI.
+pnpm @krodak/clickup-cli
+
+# Language and build tooling used across projects.
+pnpm typescript
+pnpm tsx
+pnpm turbo
+pnpm tailwindcss
+
+# Browser automation and test runner.
+pnpm playwright
+
+# Vercel CLI.
+npm vercel
