@@ -14,6 +14,7 @@
 !.config/opencode/
 !.config/opencode/**
 .config/opencode/page.png
+.config/opencode/service.json
 !.config/wezterm/
 !.config/wezterm/**
 .config/wezterm/.claude/
