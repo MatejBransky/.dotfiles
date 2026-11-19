@@ -1,34 +1,114 @@
-# Core workstation tools used by the shell, editor, terminal and file tools.
+# Workstation Homebrew inventory.
+# Restore with: brew bundle --file=~/.config/workstation/Brewfile
+#
+# Notes:
+# - The OpenCode CLI is installed by its own installer into ~/.opencode/bin,
+#   not by Homebrew. The desktop client is the `opencode-desktop` cask below.
+# - Node is managed by fnm, so Homebrew `node` is not pinned here; it is pulled
+#   in as a dependency where needed.
+
+# ---------------------------------------------------------------------------
+# Core CLI: shell, editor, terminal, file tools
+# ---------------------------------------------------------------------------
 brew "git"
 brew "gh"
 brew "neovim"
 brew "lazygit"
 brew "yazi"
+brew "zoxide"
+brew "fnm"
 brew "ripgrep"
 brew "fd"
 brew "fzf"
 brew "jq"
-brew "zoxide"
 brew "zsh-syntax-highlighting"
 brew "zsh-vi-mode"
-brew "opencode"
 
-# Neovim and development support.
+# ---------------------------------------------------------------------------
+# Development support
+# ---------------------------------------------------------------------------
 brew "ast-grep"
 brew "cmake"
 brew "gcc"
+brew "pyenv"
 brew "go-task"
-brew "node"
 brew "pnpm"
 brew "python@3.14"
 brew "pipx"
 brew "tree-sitter"
 
-# Other tools currently used in the development environment.
-brew "awscli"
+# ---------------------------------------------------------------------------
+# Databases and data work
+# ---------------------------------------------------------------------------
+brew "postgresql@17"
 brew "harlequin"
 brew "lazysql"
-brew "pandoc"
+brew "sqlite"
 
-cask "font-symbols-only-nerd-font"
+# ---------------------------------------------------------------------------
+# AI / agent tooling
+# ---------------------------------------------------------------------------
+brew "agent-browser"
+brew "apfel"
+# Bitwarden CLI with Touch ID unlock; the Bitwarden SSH agent depends on it.
+brew "jeanregisser/tap/bitwarden-cli-bio"
+
+# ---------------------------------------------------------------------------
+# Other tools used in the development environment
+# ---------------------------------------------------------------------------
+brew "awscli"
+brew "pandoc"
+brew "ffmpeg"
+brew "librsvg"
+brew "git-trim"
+
+# ---------------------------------------------------------------------------
+# Primary GUI applications
+# ---------------------------------------------------------------------------
+cask "dbeaver-community"
+cask "docker-desktop"
+cask "opencode-desktop"
+cask "claude-code@latest"
+cask "copilot-cli"
+cask "slack"
+cask "microsoft-teams"
+cask "discord"
+cask "zoom"
+cask "whatsapp"
+cask "raycast"
+cask "alt-tab"
+cask "karabiner-elements"
+cask "betterdisplay"
+cask "shottr"
+cask "tunnelblick"
+cask "bitwarden"
+cask "brave-browser"
+cask "google-chrome"
 cask "wezterm@nightly"
+cask "font-symbols-only-nerd-font"
+
+# ---------------------------------------------------------------------------
+# Other currently installed applications (kept so a reinstall loses nothing)
+# ---------------------------------------------------------------------------
+cask "visual-studio-code"
+cask "figma"
+cask "bruno"
+cask "beekeeper-studio"
+cask "pgadmin4"
+cask "redis-insight"
+cask "google-drive"
+cask "parsec"
+cask "teamviewer"
+cask "fuse-t"
+cask "fuse-t-sshfs"
+cask "glide"
+cask "vanilla"
+cask "soundsource"
+cask "kitlangton-hex"
+cask "logi-options+"
+cask "ukelele"
+cask "basictex"
+cask "tldraw"
+cask "jellyfin-media-player"
+cask "vlc"
+cask "spotify"
