@@ -1,17 +1,77 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "lsp": true,
-  "plugin": ["opencode-pty"],
-  "mcp": {
-    "chrome-devtools": {
-      "type": "local",
-      "enabled": true,
-      "command": ["npx", "chrome-devtools-mcp@latest", "--autoConnect"],
+  "plugins": [
+    "/Users/matejbransky/Developer/work/opencode-cursor",
+    "@plannotator/opencode@latest",
+    "github:vercel/vercel-plugin"
+  ],
+  "references": {
+    "work-notes": {
+      "path": "~/Developer/work/work-vault",
+      "description": "My work notes",
     },
-    "playwright": {
+    "personal-notes": {
+      "path": "~/Developer/personal/personal-vault",
+      "description": "My personal notes",
+    },
+  },
+  "mcp": {
+    "servers": {
+      "chrome-devtools": {
+        "type": "local",
+        "disabled": false,
+        "command": ["npx", "chrome-devtools-mcp@latest", "--autoConnect"],
+      },
+      "playwright": {
+        "type": "local",
+        "disabled": false,
+        "command": ["npx", "@playwright/mcp@latest"],
+        "environment": {
+          "MOMENCE_USER_EMAIL": "{env:MOMENCE_USER_EMAIL}",
+          "MOMENCE_USER_PASSWORD": "{env:MOMENCE_USER_PASSWORD}",
+        },
+      },
+      "bitwarden": {
+        "type": "local",
+        "disabled": false,
+        "command": ["npx", "-y", "@bitwarden/mcp-server"],
+        "environment": {
+          "BW_SESSION": "{env:BW_SESSION}",
+        },
+      },
+      "codebase-memory-mcp": {
+        "command": ["/Users/matejbransky/.local/bin/codebase-memory-mcp"],
+        "type": "local",
+      },
+      "github": {
+        "type": "remote",
+        "url": "https://api.githubcopilot.com/mcp/",
+        "disabled": false,
+        "oauth": false,
+        "headers": {
+          "Authorization": "{env:GITHUB_TOKEN}",
+        },
+      },
+      "home-assistant": {
+        "type": "remote",
+        "url": "https://homeassistant.roborovski-beaver.ts.net/api/webhook/{env:HOME_ASSISTANT_WEBHOOK_ID}",
+        "disabled": false,
+      },
+      "browse": {
+        "type": "local",
+        "command": [
+          "/Users/matejbransky/.local/bin/browse",
+          "mcp"
+        ],
+        "environment": {
+          "OPENCODE_BROWSER_RUNTIME": "auto-update"
+        }
+      },
+    },
+    "codebase-memory-mcp": {
+      "command": ["/Users/matejbransky/.local/bin/codebase-memory-mcp"],
       "type": "local",
-      "enabled": true,
-      "command": ["npx", "playwright-mcp@latest"],
     },
   },
 }
