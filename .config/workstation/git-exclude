@@ -15,6 +15,9 @@
 !.config/opencode/**
 .config/opencode/page.png
 .config/opencode/service.json
+!.config/raycast/
+!.config/raycast/scripts/
+!.config/raycast/scripts/**
 !.config/wezterm/
 !.config/wezterm/**
 .config/wezterm/.claude/
@@ -24,3 +27,6 @@
 !.config/workstation/**
 !.config/zsh/
 !.config/zsh/**
+!.local/
+!.local/src/
+!.local/src/**
