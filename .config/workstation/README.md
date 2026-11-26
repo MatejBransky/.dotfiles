@@ -264,15 +264,47 @@ The SSH agent must be running and unlocked before Git operations that use SSH. T
 
 The `core.sshCommand` setting selects the correct public-key identity for each repository scope. Bitwarden then supplies the corresponding private key through its agent.
 
+## Directory Profiles
+
+Direnv is installed through `Brewfile` and loaded at the end of `~/.config/zsh/zshrc`. The machine-local profile files are intentionally outside Git:
+
+```text
+~/.envrc                         # default work profile
+~/Developer/personal/.envrc      # personal override
+```
+
+The work profile is sourced before the direnv hook and reapplied when direnv unloads the last `.envrc`, so directories outside any `.envrc` ancestry (for example `/tmp`) still use work. Entering `~/Developer/personal` loads the personal override; leaving it restores work.
+
+Both profiles obtain the GitHub token from the existing `gh` keyring login and export it as both `GH_TOKEN` and `GITHUB_TOKEN`. No token is stored in `.envrc`. Review and authorize each local file after creating it:
+
+```bash
+direnv allow ~/.envrc
+direnv allow ~/Developer/personal/.envrc
+```
+
+The personal profile also selects `~/.claude-personal`. Work leaves `CLAUDE_CONFIG_DIR` unset so Claude uses its normal `~/.claude` and `~/.claude.json` layout. Cursor currently remains work-only: `CURSOR_CONFIG_DIR` separates settings but not browser authentication, so a future personal Cursor account needs its own `CURSOR_API_KEY`.
+
+Git keeps identity, signing and SSH routing in the existing `includeIf` files. A broad work fallback appears before the specific personal rules, so scratch repositories default to work without duplicating `GIT_AUTHOR_*` variables in direnv.
+
+OpenCode is personal-only. New worktrees are created under each canonical checkout's `.git/opencode-worktrees`, and the `workstation.direnv` V2 plugin loads the nearest profile for shell commands and MCP servers. For older linked worktrees outside the personal tree, the plugin resolves the canonical worktree before falling back to the home-level work profile.
+
+Direnv affects interactive shells and processes that explicitly use `direnv exec`. GUI applications and daemons need their own launch environment; the OpenCode plugin covers OpenCode's shell and MCP processes specifically.
+
 ## Environment Variables
 
-Most variables are set by the shell configuration or provided by macOS. The setup does not require a checked-in `.env` file.
+Most variables are set by the shell configuration, direnv, or macOS.
 
 | Variable | Required | Purpose | Source |
 |---|---:|---|---|
 | `HOME` | Yes | User home directory used by all dotfiles paths | macOS |
 | `PATH` | Yes | Finds Homebrew and the installed tools | macOS, Homebrew and shell setup |
 | `SSH_AUTH_SOCK` | For SSH | Points Git/OpenSSH to the Bitwarden SSH agent socket | Local machine setup |
+| `GH_TOKEN`, `GITHUB_TOKEN` | For GitHub API access | Selected personal/work GitHub token | Local `.envrc`, read from `gh` keyring |
+| `WORKSTATION_PROFILE` | Recommended | Explicit `work` or `personal` profile marker | Local `.envrc` |
+| `CLAUDE_CONFIG_DIR` | Personal Claude only | Uses `~/.claude-personal`; unset for work | Local `.envrc` |
+| `CURSOR_CONFIG_DIR` | Recommended | Cursor settings directory; not an authentication boundary | Local `.envrc` |
+| `DEV_DB_HOST`, `DEV_DB_PORT`, `DEV_DB_USER`, `DEV_DB_NAME` | Work DB helpers | Local PostgreSQL connection settings | Work `.envrc` |
+| `MOMENCE_USER_EMAIL`, `MOMENCE_USER_PASSWORD` | Work integrations only | Momence test credentials; removed in personal mode | Work shell environment, never Git |
 | `EDITOR` | Recommended | Default editor; set to `nvim` | `~/.config/zsh/dev.zsh` |
 | `XDG_CONFIG_HOME` | Recommended | Configuration root; set to `$HOME/.config` | `~/.config/zsh/path.zsh` |
 | `PYENV_ROOT` | If using pyenv | pyenv installation path; defaults to `$HOME/.pyenv` | `~/.config/zsh/path.zsh` |
@@ -289,9 +321,16 @@ Most variables are set by the shell configuration or provided by macOS. The setu
 
 `OPENAI_API_KEY` is intentionally not stored in the repository. Set it only in the local shell, a password manager integration or another machine-local secret mechanism when a helper actually needs it.
 
-Verify the effective configuration:
+Verify the effective configuration without printing token values:
 
 ```bash
+direnv status
+printf '%s\n' "$WORKSTATION_PROFILE"
+gh api user --jq .login
+git config --show-origin --get user.email
+git config --show-origin --get core.sshCommand
+git config --show-origin --get commit.gpgsign
+printf '%s\n' "${CLAUDE_CONFIG_DIR-unset}" "$CURSOR_CONFIG_DIR"
 cfg config --get user.name
 cfg config --get user.email
 cfg config --get core.sshCommand

@@ -1,11 +1,10 @@
-# Local PostgreSQL database from Docker Compose (host-side connection).
-export DEV_DB_HOST=localhost
-export DEV_DB_PORT=5433
-export DEV_DB_USER=postgres
-export DEV_DB_NAME=ribbon
-
 # Load the dev DB password from Bitwarden only when it is needed.
 function dev-db-env() {
+  if [[ ${WORKSTATION_PROFILE:-} != work ]]; then
+    echo "dev-db-env is only available in the work profile."
+    return 1
+  fi
+
   if [[ -z ${BW_SESSION:-} ]]; then
     echo "Run bw-unlock first."
     return 1

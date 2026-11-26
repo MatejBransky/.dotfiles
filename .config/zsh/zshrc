@@ -28,3 +28,32 @@ source ~/.config/zsh/vim-mode.zsh
 if [[ -z $INITIALIZED_BY ]]; then
   execute_commands_by '.zshrc'
 fi
+
+# Work is the default even outside any .envrc ancestry. Direnv then applies
+# the nearest .envrc (including the personal override) when the directory changes.
+[ -f ~/.envrc ] && source ~/.envrc
+
+if command -v direnv >/dev/null 2>&1; then
+  eval "$(direnv hook zsh)"
+
+  # Direnv restores the pre-hook environment when the last .envrc is unloaded.
+  # Reapply the workstation default so /tmp and other unrelated directories do
+  # not lose the work profile after visiting a personal project.
+  functions[_workstation_direnv_hook]=$functions[_direnv_hook]
+  _direnv_hook() {
+    _workstation_direnv_hook "$@"
+    if [[ -z ${DIRENV_FILE:-} && ${_WORKSTATION_FALLBACK_PWD:-} != "$PWD" ]]; then
+      # Do not replace a blocked or failed project .envrc with the work profile.
+      local current=$PWD
+      while true; do
+        [[ -f "$current/.envrc" ]] && return
+        [[ "$current" == / ]] && break
+        current=${current:h}
+      done
+
+      if [ -f ~/.envrc ]; then
+        source ~/.envrc && _WORKSTATION_FALLBACK_PWD=$PWD
+      fi
+    fi
+  }
+fi

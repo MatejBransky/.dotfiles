@@ -12,6 +12,7 @@
 # ---------------------------------------------------------------------------
 brew "git"
 brew "gh"
+brew "direnv"
 brew "neovim"
 brew "lazygit"
 brew "yazi"

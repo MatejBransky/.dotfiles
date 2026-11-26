@@ -4,6 +4,8 @@
 	gpgsign = false
 [core]
 	editor = nvim
+[includeIf "gitdir:**/"]
+    path = ~/Developer/work/.gitconfig
 [includeIf "gitdir:~/Developer/work/"]
     path = ~/Developer/work/.gitconfig
 [includeIf "gitdir:~/Developer/personal/"]
