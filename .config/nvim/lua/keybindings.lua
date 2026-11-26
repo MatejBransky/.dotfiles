@@ -333,6 +333,11 @@ return {
         mode = { "n", "i" },
         shortcut = "S",
       },
+      importGraph = {
+        desc = "Import graph (imports / imported by)",
+        mode = "n",
+        shortcut = "<leader>og",
+      },
     },
     gitLog = {
       openFile = {

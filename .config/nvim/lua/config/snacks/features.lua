@@ -3,6 +3,7 @@
 return {
   explorer_git_status = true,
   explorer_floating_preview = true,
+  explorer_import_graph = true,
   picker_cycle_preview = true,
   picker_git_log_actions = true,
 }
