@@ -100,58 +100,70 @@ return {
   },
 
   --
-  -- Explorer (Neo-tree)
+  -- Explorer
+  -- Only `floatingExplorer` is wired up (lua/plugins/snacks/explorer.lua).
+  -- The rest is left over from the Neo-tree setup.
   --
   explorer = {
+    -- UNUSED: not wired to any keymap
     showInCurrent = {
       mode = "n",
       shortcut = "-",
+      desc = "Show explorer in the current window",
     },
     floatingExplorer = {
-      desc = "Explorer NeoTree (root dir)",
+      desc = "Floating Explorer (root dir)",
       mode = "n",
       shortcut = "<M-'>",
     },
-    showSidebarExplorer = {
-      desc = "Show sidebar explorer",
-      mode = "n",
-      shortcut = "<C-'>",
-    },
+    -- showSidebarExplorer = {
+    --   desc = "Show sidebar explorer",
+    --   mode = "n",
+    --   shortcut = "<C-'>",
+    -- },
+    -- UNUSED: not wired to any keymap
     hideSidebarExplorer = {
       desc = "Hide sidebar explorer",
       mode = "n",
       shortcut = "<C-c>",
     },
+    -- UNUSED: not wired to any keymap
     prevSibling = {
       desc = "Jump to the previous sibling",
       mode = "n",
       shortcut = "K",
     },
+    -- UNUSED: not wired to any keymap
     nextSibling = {
       desc = "Jump to the next sibling",
       mode = "n",
       shortcut = "J",
     },
+    -- UNUSED: not wired to any keymap
     split = {
       desc = "Open file in the new window (horizontal split)",
       mode = "n",
       shortcut = "<C-s>",
     },
+    -- UNUSED: not wired to any keymap
     vsplit = {
       desc = "Open file in the new window (vertical split)",
       mode = "n",
       shortcut = "<C-v>",
     },
+    -- UNUSED: not wired to any keymap
     grepInSelected = {
       desc = "Grep search in the selected folder",
       mode = "n",
       shortcut = "tg",
     },
+    -- UNUSED: not wired to any keymap
     findInSelected = {
       desc = "Find in files of the selected folder",
       mode = "n",
       shortcut = "tf",
     },
+    -- UNUSED: not wired to any keymap
     close = {
       desc = "Close explorer",
       mode = { "n", "i" },

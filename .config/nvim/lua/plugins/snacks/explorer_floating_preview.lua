@@ -15,11 +15,12 @@ return {
     explorer.on_show = function(picker)
       local gap = 1
       local position = picker.resolved_layout.layout.position
+      -- only the docked (sidebar) explorer gets the floating preview;
+      -- e.g. the floating explorer keeps its own layout
+      if position ~= "left" and position ~= "right" then
+        return
+      end
       local root = picker.layout.root
-      assert(
-        position == "left" or position == "right",
-        "Floating explorer preview requires a left/right sidebar layout"
-      )
 
       local function update(win)
         local border = win:border_size().left + win:border_size().right

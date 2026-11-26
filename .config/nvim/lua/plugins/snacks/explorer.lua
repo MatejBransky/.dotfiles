@@ -1,4 +1,5 @@
 local keybindings = require("keybindings").snacks
+local floatingExplorer = require("keybindings").explorer.floatingExplorer
 
 return {
   "folke/snacks.nvim",
@@ -42,6 +43,18 @@ return {
       end,
       mode = keybindings.explorer.show.mode,
       desc = keybindings.explorer.show.desc,
+    },
+    {
+      floatingExplorer.shortcut,
+      function()
+        require("snacks").explorer({
+          cwd = LazyVim.root(),
+          auto_close = true,
+          layout = { preset = "default" },
+        })
+      end,
+      mode = floatingExplorer.mode,
+      desc = floatingExplorer.desc,
     },
   },
 }
