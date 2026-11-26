@@ -7,9 +7,13 @@
 -- c  Command-line mode map. Defined using ':cmap' or ':cnoremap'.
 -- o  Operator pending mode map. Defined using ':omap' or ':onoremap'.
 
+-- NOTE: entries marked `-- UNUSED` are not referenced by any keymap yet,
+-- so changing them has no effect until something consumes them.
+
 return {
   --
   -- Search and replace
+  -- UNUSED: nothing references the `searchReplace` group
   --
   searchReplace = {
     replaceWord = {
@@ -38,6 +42,7 @@ return {
   -- Misc
   --
   misc = {
+    -- UNUSED: not wired to any keymap
     deleteBlackHole = {
       desc = "Delete (black hole)",
       mode = { "n", "v" },
@@ -57,6 +62,7 @@ return {
 
   --
   -- Harpoon
+  -- UNUSED: the plugin is mapped with hardcoded keys in lua/plugins/coding.lua
   --
   harpoon = {
     list = {
@@ -155,6 +161,7 @@ return {
 
   --
   -- Telescope
+  -- UNUSED: replaced by the Snacks picker (`snacks` group below)
   --
   telescope = {
     recentFiles = {
@@ -313,6 +320,7 @@ return {
   -- Misc reference operations
   --
   references = {
+    -- UNUSED: not wired to any keymap
     openInFinder = {
       desc = "Open parent directory in Finder",
       mode = "n",
@@ -323,11 +331,13 @@ return {
       mode = "n",
       shortcut = "<leader>oo",
     },
+    -- UNUSED: not wired to any keymap
     copyUrl = {
       desc = "Copy repo url",
       mode = "n",
       shortcut = "<leader>ou",
     },
+    -- UNUSED: not wired to any keymap
     copyBranchname = {
       desc = "Copy branch name",
       mode = "n",
@@ -424,6 +434,7 @@ return {
 
   --
   -- Code completion
+  -- UNUSED: blink.cmp uses its own keymap preset (lua/plugins/cmp.lua)
   --
   completion = {
     show = {
@@ -449,11 +460,13 @@ return {
   -- Snippets
   --
   snippet = {
+    -- UNUSED: not wired to any keymap
     add = {
       desc = "Add new snippet",
       mode = { "n", "x" },
       shortcut = "<leader>cn",
     },
+    -- UNUSED: not wired to any keymap
     edit = {
       desc = "Edit snippet",
       mode = "n",
@@ -475,21 +488,25 @@ return {
   -- LSP
   --
   lsp = {
+    -- UNUSED: not wired to any keymap (LazyVim sets its own gd/gr/gy/gI)
     goToDefinition = {
       mode = "n",
       shortcut = "gd",
       desc = "Go to definition",
     },
+    -- UNUSED: not wired to any keymap
     goToTypeDefinition = {
       desc = "Go to type definition",
       mode = "n",
       shortcut = "gy",
     },
+    -- UNUSED: not wired to any keymap
     goToImplementation = {
       desc = "Go to implementation",
       mode = "n",
       shortcut = "gi",
     },
+    -- UNUSED: not wired to any keymap
     goToReferences = {
       desc = "Go to references",
       mode = "n",
@@ -500,16 +517,19 @@ return {
       mode = "n",
       shortcut = "<leader>h",
     },
+    -- UNUSED: not wired to any keymap
     outlineSymbols = {
       desc = "Outline symbols",
       mode = "n",
       shortcut = "<leader>co",
     },
+    -- UNUSED: not wired to any keymap
     renameSymbol = {
       desc = "Rename symbol",
       mode = "n",
       shortcut = "<leader>cr",
     },
+    -- UNUSED: not wired to any keymap
     codeAction = {
       desc = "Code action",
       mode = { "x", "n" },
@@ -520,11 +540,13 @@ return {
       mode = "n",
       shortcut = "<leader>cu",
     },
+    -- UNUSED: not wired to any keymap
     sourceAction = {
       desc = "Source action",
       mode = "n",
       shortcut = "<leader>cA",
     },
+    -- UNUSED: not wired to any keymap
     diagList = {
       desc = "Show diagnostics",
       mode = "n",
@@ -550,16 +572,19 @@ return {
       mode = "n",
       shortcut = "<leader>xr",
     },
+    -- UNUSED: not wired to any keymap
     format = {
       desc = "Format",
       mode = { "x", "n" },
       shortcut = "<leader>cf",
     },
+    -- UNUSED: not wired to any keymap (same key as outlineSymbols)
     organizeImports = {
       desc = "Organize imports",
       mode = "n",
       shortcut = "<leader>co",
     },
+    -- UNUSED: not wired to any keymap
     renameFile = {
       desc = "Rename file (refs updated)",
       mode = "n",
