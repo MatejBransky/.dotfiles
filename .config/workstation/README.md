@@ -21,6 +21,8 @@ The repository uses:
 - `~/.config/yazi/`
 - `~/.config/opencode/`
 - `~/.config/workstation/`
+- `~/.finicky.ts`
+- `~/Applications/Brave Work Opener.applescript`
 
 Local data, secrets, `.claude` overrides, Node dependencies, screenshots and vendored Neovim `externals/` are not tracked.
 
@@ -76,6 +78,28 @@ cfgvim
 ```
 
 `cfgvim` opens Neovim with `$HOME` as the work tree and sets `GIT_DIR` to `~/.cfg`. Inside Neovim, `<leader>gD` opens LazyGit for the dotfiles repository. `<leader>gg` remains assigned to the current project/root repository.
+
+## Browsers
+
+Work and personal browsing are two separate Brave builds, not two profiles inside one app:
+
+- **Work** — stable Brave (`com.brave.Browser`, cask `brave-browser`), profile `Profile 1`.
+- **Personal** — Brave Beta (`com.brave.Browser.beta`, cask `brave-browser@beta`), single profile.
+
+Two applications instead of one, because activating a browser raises all of its windows in every Space; with both profiles in stable Brave, focusing work dragged the personal window over the terminal on the other display.
+
+Finicky (`~/.finicky.ts`, cask `finicky`) is the default browser and the registered handler for `public.html`. It decides where each URL goes:
+
+| URL opened from | Browser |
+| --- | --- |
+| work apps (Slack, Outlook, Teams, Cursor, Claude, Figma, ClickUp PWA) | work |
+| Slack channels listed in `PERSONAL_SLACK_CHANNELS` | personal |
+| terminal, CLI, local `file://` URLs (no opener) | work |
+| everything else | personal |
+
+Work URLs go through `~/Applications/Brave Work Opener.app`, a small AppleScript applet that raises an existing normal Brave window before handing the URL over — Chromium opens a new window when the last active Brave window is an app-mode/PWA window. The applet source is tracked in this repository as `Applications/Brave Work Opener.applescript` (the compiled `.app` is not); the rebuild command is in its header.
+
+`~/.local/src/brave-focus.swift` toggles focus between the two builds; see its header for the commands.
 
 ## Adding Configuration
 
