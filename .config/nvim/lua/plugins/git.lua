@@ -1,5 +1,47 @@
 local keybindings = require("keybindings")
 
+---Close diffview completely, then open the file selected in it in its place.
+---
+---Diffview's own <C-w>gf keeps the view open, which makes the opened buffer
+---shared with the diff window, so closing it afterwards tears down diffview.
+---@return nil
+local function diffview_close_and_goto_file()
+  local lib = require("diffview.lib")
+  local view = lib.get_current_view()
+
+  if not view then
+    vim.notify("No diffview open", vim.log.levels.WARN)
+    return
+  end
+
+  local file = view:infer_cur_file()
+  if not file then
+    vim.notify("No file selected", vim.log.levels.WARN)
+    return
+  end
+
+  if not require("diffview.utils").path:readable(file.absolute_path) then
+    vim.notify("File does not exist on disk: " .. file.absolute_path, vim.log.levels.WARN)
+    return
+  end
+
+  local path = file.absolute_path
+  local layout = file.layout
+  local cursor
+  local main = view.cur_layout:get_main_win()
+  if main:is_valid() and vim.api.nvim_win_get_buf(main.id) == file.bufnr then
+    cursor = vim.api.nvim_win_get_cursor(main.id)
+  end
+
+  vim.cmd("DiffviewClose")
+  layout:restore_winopts()
+  vim.cmd("edit " .. vim.fn.fnameescape(path))
+
+  if cursor then
+    pcall(vim.api.nvim_win_set_cursor, 0, cursor)
+  end
+end
+
 return {
   {
     "worktree-switcher",
@@ -136,7 +178,7 @@ return {
         view = {
           {
             "n",
-            "gf",
+            keybindings.git.openCommitFile.shortcut,
             function()
               local view = require("diffview.lib").get_current_view()
               if not view then
@@ -159,13 +201,19 @@ return {
               vim.cmd("tabnew")
               vim.cmd("keepalt Gedit " .. rev.commit .. ":" .. file.path)
             end,
-            { desc = "Open file at commit revision via fugitive", silent = true },
+            { desc = keybindings.git.openCommitFile.desc, silent = true },
+          },
+          {
+            "n",
+            keybindings.git.closeDiffviewAndOpenFile.shortcut,
+            diffview_close_and_goto_file,
+            { desc = keybindings.git.closeDiffviewAndOpenFile.desc, silent = true },
           },
         },
         file_panel = {
           {
             "n",
-            "gf",
+            keybindings.git.openCommitFile.shortcut,
             function()
               local view = require("diffview.lib").get_current_view()
               if not view then
@@ -188,13 +236,19 @@ return {
               vim.cmd("tabnew")
               vim.cmd("keepalt Gedit " .. rev.commit .. ":" .. file.path)
             end,
-            { desc = "Open file at commit revision via fugitive", silent = true },
+            { desc = keybindings.git.openCommitFile.desc, silent = true },
+          },
+          {
+            "n",
+            keybindings.git.closeDiffviewAndOpenFile.shortcut,
+            diffview_close_and_goto_file,
+            { desc = keybindings.git.closeDiffviewAndOpenFile.desc, silent = true },
           },
         },
         file_history_panel = {
           {
             "n",
-            "gf",
+            keybindings.git.openCommitFile.shortcut,
             function()
               local view = require("diffview.lib").get_current_view()
               if not view then
@@ -218,7 +272,13 @@ return {
               vim.cmd("tabnew")
               vim.cmd("keepalt Gedit " .. hash .. ":" .. file.path)
             end,
-            { desc = "Open file at selected commit via fugitive", silent = true },
+            { desc = keybindings.git.openCommitFile.desc, silent = true },
+          },
+          {
+            "n",
+            keybindings.git.closeDiffviewAndOpenFile.shortcut,
+            diffview_close_and_goto_file,
+            { desc = keybindings.git.closeDiffviewAndOpenFile.desc, silent = true },
           },
         },
       },

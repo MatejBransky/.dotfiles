@@ -239,6 +239,26 @@ return {
       mode = "n",
       shortcut = "<leader>gq",
     },
+    openCommitFile = {
+      desc = "Open file at commit revision via fugitive",
+      mode = "n",
+      shortcut = "gf",
+    },
+    closeDiffviewAndOpenFile = {
+      desc = "Close diffview and open the file in its window",
+      mode = "n",
+      shortcut = "<C-w>gx",
+    },
+    prevConflict = {
+      desc = "In the merge-tool: jump to the prev conflict",
+      mode = "n",
+      shortcut = "<M-Left>",
+    },
+    nextConflict = {
+      desc = "In the merge-tool: jump to the next conflict",
+      mode = "n",
+      shortcut = "<M-Right>",
+    },
     fastForward = {
       desc = "Fast-forward",
       mode = "n",
