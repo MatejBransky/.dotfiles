@@ -23,6 +23,51 @@ local function typescript_root(bufnr)
   }) or vim.fn.getcwd()
 end
 
+-- fallow only attaches where a fallow config exists, so repos that do not use
+-- fallow stay quiet. `:FallowLsp` (or FALLOW_LSP_ALL=1) turns it on for every
+-- JS/TS project, e.g. to review code in the work monorepo.
+local fallow_config_files = { ".fallowrc.json", ".fallowrc.jsonc", "fallow.toml", ".fallow.toml" }
+local fallow_warned = false
+
+local function fallow_all_projects()
+  if vim.g.fallow_lsp_all == nil then
+    vim.g.fallow_lsp_all = vim.env.FALLOW_LSP_ALL == "1"
+  end
+
+  return vim.g.fallow_lsp_all
+end
+
+local function fallow_bin(root)
+  local local_bin = root .. "/node_modules/.bin/fallow-lsp"
+  if vim.fn.executable(local_bin) == 1 then
+    return local_bin
+  end
+
+  if vim.fn.executable("fallow-lsp") == 1 then
+    return "fallow-lsp"
+  end
+end
+
+local function fallow_root_dir(bufnr, on_dir)
+  local configured_root = vim.fs.root(bufnr, fallow_config_files)
+  local root = fallow_all_projects() and typescript_root(bufnr) or configured_root
+  if not root then
+    return
+  end
+
+  if not fallow_bin(root) then
+    if not fallow_warned then
+      fallow_warned = true
+      vim.schedule(function()
+        vim.notify("fallow-lsp not found: run `bun install -g fallow`", vim.log.levels.WARN)
+      end)
+    end
+    return
+  end
+
+  on_dir(root)
+end
+
 local function supports_lsp(bin, minor)
   if vim.fn.executable(bin) ~= 1 then
     return false
@@ -130,6 +175,23 @@ return {
         vim.diagnostic.open_float,
         { desc = keybindings.lsp.showDiagWindow.desc }
       )
+
+      -- fallow-lsp is enabled where the project has a fallow config; the
+      -- command attaches it to every JS/TS project for ad-hoc reviews.
+      vim.api.nvim_create_user_command("FallowLsp", function()
+        vim.g.fallow_lsp_all = not fallow_all_projects()
+
+        if vim.g.fallow_lsp_all then
+          vim.lsp.enable("fallow")
+          -- `vim.lsp.enable()` only re-runs its FileType autocmd after
+          -- VimEnter, so force it to attach open buffers right away.
+          pcall(vim.cmd.doautoall, "nvim.lsp.enable FileType")
+          vim.notify("fallow-lsp: on for all JS/TS projects")
+        else
+          vim.lsp.enable("fallow", false)
+          vim.notify("fallow-lsp: only projects with a fallow config")
+        end
+      end, { desc = "Toggle fallow-lsp for all JS/TS projects" })
     end,
     ---@class PluginLspOpts
     opts = {
@@ -190,6 +252,19 @@ return {
           end,
           cmd = function(dispatchers, config)
             return tsc_cmd(dispatchers, config, 1)
+          end,
+        },
+        fallow = {
+          mason = false,
+          filetypes = { "javascript", "typescript", "javascriptreact", "typescriptreact" },
+          root_dir = function(bufnr, on_dir)
+            fallow_root_dir(bufnr, on_dir)
+          end,
+          -- Prefer the fallow of the project so the editor and its CI agree.
+          cmd = function(dispatchers, config)
+            local bin = fallow_bin((config or {}).root_dir or vim.fn.getcwd()) or "fallow-lsp"
+
+            return vim.lsp.rpc.start({ bin }, dispatchers)
           end,
         },
         lua_ls = {
