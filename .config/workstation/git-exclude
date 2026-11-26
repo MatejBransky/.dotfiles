@@ -30,3 +30,6 @@
 !.local/
 !.local/src/
 !.local/src/**
+!.finicky.ts
+!Applications/
+!Applications/Brave Work Opener.applescript
