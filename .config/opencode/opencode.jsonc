@@ -76,5 +76,13 @@
       "command": ["/Users/matejbransky/.local/bin/codebase-memory-mcp"],
       "type": "local",
     },
+    "solidcraft": {
+      "command": [
+        "/Applications/SolidCraft.app/Contents/MacOS/solidcraft-cli",
+        "mcp"
+      ],
+      "enabled": true,
+      "type": "local"
+    },
   },
 }
